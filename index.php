@@ -16,6 +16,7 @@
 	    <?php
 		echo str_replace("+"," ",($_COOKIE["error"]));
 		setcookie("error", "", time() - 3600);
+		setcookie("LogUser", "", time() - 3600);
 	    ?>
 	  </div>
         </div>
