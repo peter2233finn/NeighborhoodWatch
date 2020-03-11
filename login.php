@@ -87,20 +87,30 @@ function adminConsole(){
 	     </select></td><td><input class="bt1" type="submit" value="Submit"></form></td></tr></table>';
 	
 	if($_POST["action"] == "del"){
-
+		$msg="";
+		$ter=0;
 		foreach($_POST as $key => $value)
 		{
 			if(is_int((int)$key) && $key != "action"){
-				$conn->query("DELETE FROM LISTS WHERE USERID = '". $key."'");
-				$conn->query("DELETE FROM USERS WHERE USERID = '". $key."'");
-				echo "X".$key."X\n";
-				$_POST = array();
+				if ($key == 1){
+					$msg.="NOTE: you cannot delete the admin user.<br>";
+				}
+				else{
+					$conn->query("DELETE FROM LISTS WHERE USERID = '". $key."'");
+					$conn->query("DELETE FROM USERS WHERE USERID = '". $key."'");
+					if($ter==1){
+						$ter=1;
+						$msg.="Deleted users.<br>";
+					}
+				}
 			}
 		}
+		echo $msg;
+		$_POST = array();
 	}
 
 
-	elseif($_POST["action"] == "mod"){
+	elseif($_POST["action"] == "mod" && count($_POST) != 1){
 		echo "<br><br><table><tr><td>Username</td><td>Firstname</td><td>Last name</td><td>House number</td><td>New password</td><td>Repeat password";
 		echo '<form method="post" action="login.php"></td>';
 		foreach($_POST as $key => $value)
@@ -123,40 +133,60 @@ function adminConsole(){
 		//header("Location: login.php");
 		
 	}
-	elseif($_POST["action"] == "doUpdate"){
+	elseif($_POST["action"] == "doAdd"){
+		if ($_POST['pas1'] == $_POST['pas2']){
+			$conn->query("insert into USERS(FNAME,LNAME,HOUSE,USERNAME,PASSWORD) values('".$_POST['fname']."','".$_POST['lname']."','".$_POST['add']."','".$_POST['user']."','".$_POST['pas1']."');");
+			echo("The new user has been added.");
+			$_POST = array();
+		}
+		else{
+			echo("The passwords dont match. Try again.");
+		}
+}
+	elseif($_POST["action"] == "doUpdate" && count($_POST) != 1){
 		$numUpdates=(sizeof($_POST)-1)/6;
 		$query=$conn->query("SELECT MAX(USERID) FROM USERS");
 		$num=$query->fetch();
-		
+		$msg="";
 		for ($x = 0; $x <= $num[0]; $x++) {
+
 			if(isset($_POST[$x."_user"])){
+				if($x == 1){
+					$username="admin";
+					$msg.="NOTE you cannot change the admin username.<br>";
+				}
+				else{
+					$username=trim($_POST[$x."_user"]);
+				}
+
 
 				if($_POST[$x."_pas1"] != "" && $_POST[$x."_pas2"] != ""){
 					if($_POST[$x."_pas1"] == $_POST[$x."_pas2"]){
-				
 						$sql="UPDATE USERS SET FNAME='".$_POST[$x."_fname"]."',
 					    LNAME='".trim($_POST[$x."_lname"],"\v")."
 					    ',HOUSE='".trim($_POST[$x."_add"],"\v")."
-					    ',USERNAME='".trim($_POST[$x."_user"],"\v")."
+					    ',USERNAME='".trim($username,"\v")."
 					    ',PASSWORD='".$_POST[$x."_pas1"]."
 					    ' WHERE USERID=".$x.";";
-					$query=$conn->query($sql);
-					echo "Updated ".$_POST[$x."_user"].".<br>";
-					}
+						$query=$conn->query($sql);
+						$msg.= "Updated user ".trim($_POST[$x."_user"]).".<br>";
+					}			
 					else{
-						echo "Error: The passwords you entered for ".$_POST[$x."_user"]." do not match.<br>";
+						$msg.="Passwods for user ".$_POST[$x."_user"]." don not match. Try again.<br>";
 					}
 				}
+			
 				else{
 					$query=$conn->query("UPDATE USERS SET FNAME='".$_POST[$x."_fname"]."',
-					    LNAME='".$_POST[$x."_lname"]."
-					    ',HOUSE='".$_POST[$x."_add"]."
-					    ',USERNAME='".$_POST[$x."_user"]."
+					    LNAME='".trim($_POST[$x."_lname"])."
+					    ',HOUSE='".trim($_POST[$x."_add"])."i
+					    ',USERNAME='".trim($username)."
 					    ' WHERE USERID=".$x);
-					echo "Updated ".$_POST[$x."_user"]." with no change to the pasword<br>";
+					$msg.="Updated user ".trim($_POST[$x."_user"])." with no change to the pasworad<br>";
 				}
 			}
 		}
+		echo $msg;
 	}
 
 	elseif($_POST["action"] == "add"){

@@ -4,8 +4,11 @@
 <body>
 	<table class="mainTable">
 	<tr>
-		<td>cam feed</td>
-		<td>
+		<td><center>
+		<?php
+		   include "camFeed.php";
+		?>
+		</center><td>
 			<p class="bold">Car feed</p> 
 			<table class="carFeedTable">
 				<tr> 
