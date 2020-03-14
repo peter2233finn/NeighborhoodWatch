@@ -50,7 +50,8 @@ else{
 }
 
 setcookie("msg",$msg);
-//header("Location: main.php");
+
+header("Location: main.php");
 
 ?>
 

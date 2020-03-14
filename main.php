@@ -9,28 +9,34 @@
 		   include "camFeed.php";
 		?>
 		</center><td>
-			<p class="bold">Car feed</p> 
-			<table class="carFeedTable">
-				<tr> 
-					<th>reg num</th><th>num of devices</th>
-				</tr>
-			</table>
-		</td>
+			<p class="bold">Events</p> 
+			<?php
+				include "dbConnect.php";
+				echo "<table class='carFeedTable'>";
+				$conn = $connection->query("select VIDID,VIDDIR,PLATE,TIME from CAMEVENT ORDER BY TIME DESC");
+				while ($row = $conn->fetch()) {
+					if ($row['PLATE'] == null){
+						$plate="No lisence plate";
+					}
+					else{
+						$plate=$row['PLATE'];
+					}
+					echo '<tr><td>'.$row['TIME'].'</td><td>'.$plate.'</td>
+					<td>
+					<form action="/event.php" method="post">
+					<input type="hidden" name="event" value="'.$row['VIDID'].'">
+					<input type="submit" value="Show event" class="bt1">
+					</form>
+					</td></tr>';
 
-		<tr>
-			<td>
+				}
+
+				echo '<tr onclick=\'window.open("google.com");\'><th>reg num</th><th>num of devices</th></tr></table>
+				</td><tr><td>
 				<p class="bold">Settings</p>
 				<table>
-				<tr>
-					<td>Vehicle settings</td>
-					<td>Account settings</td>
-				</tr>
-				<tr>
-
-				<td>
-Whitelist vehicles
-<form action="/update.php" method="post">
-<?php
+				<tr><td>Vehicle settings</td><td>Account settings</td></tr><tr><td>Whitelist vehicles
+				<form action="/update.php" method="post">';
 
 	include 'auth.php';	
 	include 'dbConnect.php';
@@ -55,8 +61,8 @@ Whitelist vehicles
 	echo '" type="text" name="bl">'.$BLIST.'</textarea>';
 
 	if(isset($_COOKIE["msg"])){	
-		echo "<script>alert('". str_replace("+"," ",($_COOKIE["msg"]))."')</script>";
 		setcookie("msg", "", time() - 3600);
+		echo "<script>alert('". str_replace("+"," ",($_COOKIE["msg"]))."')</script>";
 	}
 ?>
 

@@ -44,7 +44,11 @@ td, th {
 
 .carFeedTable
 {
-    width: 45%;
+   overflow-y:scroll;
+   height:90%;
+   display:block;
+
+    width: 90%;
     color: #F2F2F2;
     font-weight: 100;
 }
