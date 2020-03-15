@@ -27,7 +27,7 @@
 					<input type="hidden" name="event" value="'.$row['VIDID'].'">
 					<input type="submit" value="Show event" class="bt1">
 					</form>
-					</td></tr>';
+					</td><td>'.$row['VIDID'].'</td></tr>';
 
 				}
 
@@ -65,7 +65,6 @@
 		echo "<script>alert('". str_replace("+"," ",($_COOKIE["msg"]))."')</script>";
 	}
 ?>
-
 
 <br><br>
 <input class="bt1" type="submit" value="Update">
