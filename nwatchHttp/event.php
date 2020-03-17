@@ -13,18 +13,29 @@ while ($row = $conn->fetch()) {
 
 echo '<table class="mainTable">
 	<tr><td>Video<br><center>
-	<video src="'.$vidDir.'" type=\'video/x-matroska; codecs="theora, vorbis"\' autoplay controls></video></center></td>
-	<td>List of devices<br><table><td>Mac address</td><td>Wifi Name</td>
+	<video src="'.$vidDir.'" type=\'video/x-matroska; codecs="theora, vorbis"\' autoplay controls></video></center></td>';
+$scannerResults='
+	<td>List of devices<br><table><td>Mac address</td><td>Device vendor</td><td>Wifi Name</td>
 	<td>Location</td><td><center>Show on<br>Google maps</center></td><td>Last seen</td> ';
+$resultNum=0;
 
-$conn = $connection->query ("select MAC,ESSID,TIME,TRILAT,TRILONG,LASTSEEN from SCANNER 
-where TIME < DATE_ADD('".$time."', INTERVAL 30 SECOND) AND TIME > DATE_ADD('".$time."', INTERVAL -30 SECOND);");
+$conn = $connection->query ("select MAC,ESSID,TIME,TRILAT,TRILONG,LASTSEEN,VENDOR from SCANNER  where ESSID in (select ESSID from BEACON  where TIME < DATE_ADD('".$time."', INTERVAL 30 SECOND) AND TIME > DATE_ADD('".$time."', INTERVAL -30 SECOND))");
 while ($row = $conn->fetch()) {
-	echo '<tr><td>'.$row['MAC'].'</td><td>'.str_replace("+"," ",$row['ESSID']).'</td>
+	$resultNum.=1;
+	$scannerResults.='<tr><td>'.$row['MAC'].'</td><td>'.$row['VENDOR'].'</td><td>'.str_replace("+"," ",$row['ESSID']).'</td>
 	<td>'.$row['TRILAT'].' , '.$row['TRILONG'].'<td><form action="http://www.google.com/maps/place/'.$row['TRILAT'].','.$row['TRILONG'].'"> 
 	<input type="submit" value="Open" class="bt1" /></form></td>
 	</td><td>'.substr(str_replace("-", " ",str_replace('"',' ',str_replace("T", " ",$row['LASTSEEN']))),0,-6).'</td></tr>';
 }
+if ($resultNum == 0)
+{
+	echo '<td>No wifi beacons found.</td>';
+}
+else{
+
+	echo $scannerResults;
+}
+
 echo '</table></td></tr>
 <tr><td></td></tr>
 </table>';

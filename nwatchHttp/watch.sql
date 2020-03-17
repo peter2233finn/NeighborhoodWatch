@@ -55,10 +55,18 @@
 	--    ID int NOT NULL AUTO_INCREMENT,
 	    MAC varchar(60),
 	    ESSID varchar(60),
+	    VENDOR varchar(60),
 	    TIME TIMESTAMP,
 	    TRILAT varchar(60),
 	    TRILONG varchar(60),
 	    LASTSEEN varchar(60)
+	);
+
+	CREATE TABLE BEACON (
+	--    ID int NOT NULL AUTO_INCREMENT,
+	    MAC varchar(60),
+	    ESSID varchar(60),
+	    TIME TIMESTAMP
 	);
 
 	CREATE TABLE LISTS (
@@ -104,7 +112,22 @@
 	insert into CAMEVENT(VIDDIR,TIME) values ('camEvents/2020-03-13 06:40:49.mkv','2020-03-13 06:40:49');
 	insert into CAMEVENT(VIDDIR,TIME) values ('camEvents/2020-03-13 06:40:49.mkv','1999-03-07 11:13:30');
 
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:40:00');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:40:10');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:40:20');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:40:30');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:40:40');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:40:50');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:41:00');
 
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 04:07:10');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 04:07:20');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 04:07:30');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 04:07:40');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','TEST1','2020-03-13 04:07:50');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','TEST2','2020-03-13 04:07:50');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','TEST3','2020-03-13 04:07:50');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','TEST4','2020-03-13 04:07:50');
 
 	INSERT INTO USERS(USERNAME,PASSWORD,FNAME,LNAME,HOUSE) VALUES ('admin','password123','JACK','OTOOL','64 THE GREEN');
 	INSERT INTO USERS(USERNAME,PASSWORD,FNAME,LNAME,HOUSE) VALUES ('POP','kjsdfkjsd','JACK','OTOOL','66 THE GREEN');

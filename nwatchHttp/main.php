@@ -12,7 +12,8 @@
 			<p class="bold">Events</p> 
 			<?php
 				include "dbConnect.php";
-				echo "<table class='carFeedTable'>";
+				echo "<table class='carFeedTable'>
+				<tr><th>Time</th><th>Regristration plate</th><th>Open event</th></tr>";
 				$conn = $connection->query("select VIDID,VIDDIR,PLATE,TIME from CAMEVENT ORDER BY TIME DESC");
 				while ($row = $conn->fetch()) {
 					if ($row['PLATE'] == null){
@@ -27,12 +28,11 @@
 					<input type="hidden" name="event" value="'.$row['VIDID'].'">
 					<input type="submit" value="Show event" class="bt1">
 					</form>
-					</td><td>'.$row['VIDID'].'</td></tr>';
+					</td></tr>';
 
 				}
 
-				echo '<tr onclick=\'window.open("google.com");\'><th>reg num</th><th>num of devices</th></tr></table>
-				</td><tr><td>
+				echo '</table></td><tr><td>
 				<p class="bold">Settings</p>
 				<table>
 				<tr><td>Vehicle settings</td><td>Account settings</td></tr><tr><td>Whitelist vehicles
