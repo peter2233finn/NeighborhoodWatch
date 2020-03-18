@@ -1,0 +1,58 @@
+. /etc/nwatch.conf
+
+function keepAlive(){
+	echo "Process \"$2\" started as PID $1" >> $logDir
+	while true
+	do		lsof -p 2380 +r $1 &>/dev/null
+		echo "[ERR]: Process with PID $1 failed. Attempting to restart with command \"$2\"" >> $logDir
+		sleep 10
+		$2
+	done
+}
+
+function killNwatch(){
+	kill $(cat /tmp/nwatch | tr "\n" " ")
+	rm /tmp/nwatch
+}
+
+function startNwatch(){
+	sh /var/nwatch/camera/alpr.sh &
+	echo $! >> /tmp/nwatch
+	sh /var/nwatch/camera/startCam.sh &
+	echo $! >> /tmp/nwatch
+	motion &
+	echo $! >> /tmp/nwatch
+	. /var/nwatch/wifi/dbSort.sh &
+	echo $! >> /tmp/nwatch
+	sh /var/nwatch/wifi/insert.sh &
+	echo $! >> tmp/nwatch
+
+	keepAlive $TESTPID "sh test1.sh &" &
+	echo $! >> /tmp/nwatch
+	keepAlive $PID1 "sh /var/nwatch/camera/alpr.sh &" &
+	echo $! >> /tmp/nwatch
+	keepAlive $PID2 "sh /var/nwatch/camera/startCam.sh &" & 
+	echo $! >> /tmp/nwatch
+	keepAlive $PID3 "motion &" &
+	echo $! >> /tmp/nwatch
+	keepAlive $PID4 ". /var/nwatch/wifi/dbSort.sh &" &
+	echo $! >> /tmp/nwatch
+	keepAlive $PID5 "sh /var/nwatch/wifi/insert.sh &" &
+	echo $! >> /tmp/nwatch
+}
+
+if [[ $* == *"--start"* ]]
+then
+	echo "Starting Neighbourhood watch."
+	startNwatch
+elif [[ $* == *"--stop"* ]] 
+then
+	echo "Stopping Neighbourhood watch."
+	killNwatch
+else
+	echo "Usage:"
+	echo "\"nwatch --start\" to start the service"
+	echo "\"nwatch --stop\" to stop the service"
+fi
+
+#sudo chmod 7a77 /dev/video0

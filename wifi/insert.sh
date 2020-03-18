@@ -25,10 +25,6 @@ channel_hop() {
 	done
 }
 
-function test {
-echo '00:00:19 -89dBm 00:0a:e2:1f:28:ab "BabyBooBear"'
-}
-
 
 function insert {
 MAC="$3"
@@ -40,7 +36,7 @@ mysql --user="$dbUser" --password="$dbPass" --database="$dbName" --execute="$dbI
 }
 
 #replace test with command and remove function test
-sudo tcpdump -l -I -i "$interface" -e -s 256 type mgt subtype probe-req | awk -f parse-tcpdump.awk | while IFS= read -r output
+sudo tcpdump -l -I -i "$interface" -e -s 256 type mgt subtype probe-req | awk -f /var/nwatch/wifi/parse-tcpdump.awk | while IFS= read -r output
 do
 	insert $output 
 	echo "[INFO]: Found iprobe: $output" >> $logDir

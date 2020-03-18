@@ -7,7 +7,7 @@ fi
 sudo rm -r /etc/nwatch
 sudo mkdir /etc/nwatch
 sudo mkdir /var/nwatch
-
+sudo mkdir /srv/http/nwatch
 . /etc/nwatch.conf
 sudo touch $logDir
 sudo chmod 777 $logDir
@@ -20,9 +20,10 @@ sudo chmod 777 -R /var/nwatch
 # cd v4l2loopback-master
 # make
 # sudo make install
+# sudo modprobe v4l2loopback
 
 cp -r camera /var/nwatch
 cp -r installFiles/nwatch.conf /etc/nwatch.conf
 cp -r installFiles/motion.conf /etc/motion
 cp -r wifi /var/nwatch
-cp -r nwatchHttp /srv/http/nwatch
+cp -r nwatchHttp/* /srv/http/nwatch

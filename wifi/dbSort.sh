@@ -1,5 +1,5 @@
 . /etc/nwatch.conf
-set -f        # disable globbing
+set -f # disable globbing
 
 while true
 do
@@ -21,9 +21,7 @@ do
 				echo ALREADY IN DB NO NEED TO QUERY WIGGLE
 			else
 				echo NOT IN DB
-#				results=$(curl -s -H 'Accept:application/json' -u $wiggleAPI --basic "https://api.wigle.net/api/v2/network/search?ssid=$query")
-results='{"success":true,"totalResults":4,"first":1,"last":4,"resultCount":4,"results":[{"trilat":43.67179489,"trilong":-79.37985229,"ssid":"Babyboobear","qos":2,"transid":"20160620-00000","firsttime":"2016-06-09T20:00:00.000Z","lasttime":"2017-01-23T19:00:00.000Z","lastupdt":"2017-09-01T16:00:00.000Z","netid":"84:94:8C:36:51:48","name":null,"type":"infra","comment":null,"wep":"2","bcninterval":0,"freenet":"?","dhcp":"?","paynet":"?","userfound":false,"channel":4,"encryption":"wpa2","country":"CA","region":"Ontario","city":"Toronto","housenumber":"298","road":"Bloor Street East","postalcode":"M4W 3Y3"},{"trilat":53.41682434,"trilong":-6.14678240,"ssid":"BabyBooBear","qos":5,"transid":"20180604-00000","firsttime":"2018-06-04T14:00:00.000Z","lasttime":"2019-10-24T17:00:00.000Z","lastupdt":"2019-10-24T17:00:00.000Z","netid":"8C:04:FF:B9:BE:12","name":null,"type":"infra","comment":null,"wep":"2","bcninterval":0,"freenet":"?","dhcp":"?","paynet":"?","userfound":true,"channel":1,"encryption":"wpa2","country":"IE","region":null,"city":null,"housenumber":null,"road":"Station Road","postalcode":"13"},{"trilat":42.03903961,"trilong":-91.56301117,"ssid":"BabyBooBear","qos":0,"transid":"20181208-00000","firsttime":"2018-12-08T16:00:00.000Z","lasttime":"2018-12-08T14:00:00.000Z","lastupdt":"2018-12-08T14:00:00.000Z","netid":"E4:F0:42:CA:74:0C","name":null,"type":"infra","comment":null,"wep":"2","bcninterval":0,"freenet":"?","dhcp":"?","paynet":"?","userfound":false,"channel":6,"encryption":"wpa2","country":"US","region":"IA","city":null,"housenumber":null,"road":"44th Street","postalcode":"52302"},{"trilat":53.41736603,"trilong":-6.14791536,"ssid":"BabyBooBear","qos":5,"transid":"20180604-00000","firsttime":"2018-06-04T14:00:00.000Z","lasttime":"2020-02-19T23:00:00.000Z","lastupdt":"2020-02-19T23:00:00.000Z","netid":"E8:FC:AF:FE:1D:9B","name":null,"type":"infra","comment":null,"wep":"2","bcninterval":0,"freenet":"?","dhcp":"?","paynet":"?","userfound":true,"channel":6,"encryption":"wpa2","country":"IE","region":null,"city":null,"housenumber":null,"road":"Station Road","postalcode":"13"}],"searchAfter":"256171982069147","search_after":256171982069147}'
-
+				results=$(curl -s -H 'Accept:application/json' -u $wiggleAPI --basic "https://api.wigle.net/api/v2/network/search?ssid=$query")
 		declare -a tmp
 		declare -a wiggleData
 		y=0
@@ -42,7 +40,7 @@ results='{"success":true,"totalResults":4,"first":1,"last":4,"resultCount":4,"re
 				macVendor=$(curl "http://macvendors.co/api/"$mac"/json"| jq '.result.company'|xargs)
 				echo $macVendor
 				mysql -u $dbUser -p"$dbPassword" nwatch -e"insert into SCANNER(VENDOR,MAC,ESSID,TRILAT,TRILONG,LASTSEEN,TIME) VALUES('$macVendor','$mac','$query','$lat','$long','$last','$time');"
-	#			mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from SCANNERLIMBO where ESSID='$(echo ${query[@]} | xargs | tr '+' ' ')'"
+				mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from SCANNERLIMBO where ESSID='$(echo ${query[@]} | xargs | tr '+' ' ')'"
 				fi
 				((y++))
 	
@@ -50,8 +48,6 @@ results='{"success":true,"totalResults":4,"first":1,"last":4,"resultCount":4,"re
 			array+=("$line")
 
 			fi
-
-			#check=1
 			essid=$((echo ${line[@]} | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}') | xargs | tr ' ' '+')
 			time=$(echo $line | awk '{print $2 " " $3}')
 			mac=$(echo $line | awk '{print $1}')
