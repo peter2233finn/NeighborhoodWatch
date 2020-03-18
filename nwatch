@@ -16,6 +16,8 @@ function killNwatch(){
 }
 
 function startNwatch(){
+	toutch /tmp/nwatch.process
+	toutch /tmp/nwatch
 	sh /var/nwatch/camera/alpr.sh &
 	echo $! >> /tmp/nwatch
 	sh /var/nwatch/camera/startCam.sh &

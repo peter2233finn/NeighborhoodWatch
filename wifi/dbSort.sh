@@ -7,27 +7,39 @@ do
 	x=0
 	while read line
 	do 
-		# makes sure its not the first row, which holds no relivand data
-		if (( $x != 0 ))
+		if [[ $(cat /tmp/nwatch.process | grep limitReached) == "limitReached" ]]
+		then
+			echo "Wiggle limit still in effect. Will try again in 30 minuits." >> $logDir
+			sleep 30m
+			# makes sure its not the first row, which holds no relivand data
+		elif (( $x != 0 ))
 		then
 			# query holds the SSID
-
 			query=$((echo ${line[@]} | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}') | xargs | tr ' ' '+')
 			check=0
 			# this checks if it is already in the database
 
 			checker=$(mysql -u $dbUser -p"$dbPassword" nwatch -e"select MAC, TIME, ESSID from SCANNER where ESSID = '"$query"'")
 			# if the checker is "" it is already in the database.
-
 			if [[ $checker != "" ]]
 			then
 				echo ALREADY IN DB NO NEED TO QUERY WIGGLE
 			else
-				echo NOT IN DB
+				echo NOT IN DB QUERYING WIGGLE
 				results=$(curl -s -H 'Accept:application/json' -u $wiggleAPI --basic "https://api.wigle.net/api/v2/network/search?ssid=$query")
+				if [[ $(echo $results | jq ".success") == "false" ]]
+				then
+					echo "Wiggle failed to do query, because: $(echo "$results" | jq ".message")" >> $logDir
+					if [[ $(echo "$results" | jq ".message") == *"too many queries today"* ]]
+					then
+						echo "limitReached" >> /tmp/nwatch.process
+					fi
+					break
+				fi
 				declare -a tmp
 				declare -a wiggleData
 				y=0
+
 				# runs through every results recieved from wiggle
 				while [[ $(echo $results | jq ".results[$y].trilat")  != "null" ]]
 				do
@@ -39,6 +51,12 @@ do
 						mac=$(echo ${line[@]} | awk '{print $1}')
 						last=$(echo $results | jq ".results[$y].lastupdt")
 						time=$(echo ${line[@]} | awk '{print $2" "$3}')
+
+						address=$(echo $(echo $results | jq ".results[$y].housenumber"" "|xargs)", ")
+						address+=$(echo $(echo $results | jq ".results[$y].road"" "|xargs)", ")
+						address+=$(echo $(echo $results | jq ".results[$y].city"" "|xargs)", ")
+						address+=$(echo $(echo $results | jq ".results[$y].country"|xargs)", ")
+
 						macVendor=$(curl "http://macvendors.co/api/"$mac"/json"| jq '.result.company'|xargs)
 						echo $macVendor
 					fi
@@ -49,12 +67,13 @@ do
 			fi
 			essid=$((echo ${line[@]} | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}') | xargs | tr ' ' '+')
 			time=$(echo $line | awk '{print $2 " " $3}')
+			#echo $time
 			mac=$(echo $line | awk '{print $1}')
 			mysql -u $dbUser -p"$dbPassword" nwatch -e"insert into BEACON(MAC,ESSID,TIME) VALUES('$mac','$essid','$time');"
 		fi
 
-		mysql -u $dbUser -p"$dbPassword" nwatch -e"insert into SCANNER(VENDOR,MAC,ESSID,TRILAT,TRILONG,LASTSEEN,TIME) VALUES('$macVendor','$mac','$query','$lat','$long','$last','$time');"
-		mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from SCANNERLIMBO where ESSID='$( echo ${query[@]} | xargs | tr '+' ' ' )'"
+#		mysql -u $dbUser -p"$dbPassword" nwatch -e"insert into SCANNER(ADDRESS,VENDOR,MAC,ESSID,TRILAT,TRILONG,LASTSEEN,TIME) VALUES('$address','$macVendor','$mac','$query','$lat','$long','$last','$time');"
+#		mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from SCANNERLIMBO where ESSID='$( echo ${query[@]} | xargs | tr '+' ' ' )'"
 		((x++))
 
 	done < <(mysql -u $dbUser -p"$dbPassword" nwatch -e"select MAC, TIME, ESSID from SCANNERLIMBO")
