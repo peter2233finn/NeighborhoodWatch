@@ -1,12 +1,8 @@
 . /etc/nwatch.conf
-dbPass="3342234Pp&^"
-dbUser='watch'
-dbName="nwatch"
 
-sudo ifconfig $networkInterface down
-sudo ifconfig $networkInterface up
-sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the network interface. check if it is set up correctly" >> $logDir; exit)
-interface="$networkInterface"'mon'
+
+interface="$(ifconfig | grep mon | head -n 1 | awk '{print $1}' | tr ":" " "| xargs)"
+echo $interface
 
 channel_hop() {
 
@@ -31,7 +27,7 @@ MAC="$3"
 SSID="$4 $5 $6 $7 $8 $9"
 
 dbInput="INSERT INTO SCANNERLIMBO(MAC, ESSID) VALUES('$MAC','$(echo $SSID|xargs)');"
-mysql --user="$dbUser" --password="$dbPass" --database="$dbName" --execute="$dbInput"
+mysql --user="$dbUser" --password="$dbPassword" --database="$dbName" --execute="$dbInput"
 
 }
 

@@ -13,17 +13,19 @@ sudo touch $logDir
 sudo chmod 777 $logDir
 sudo chmod 777 -R /etc/nwatch
 sudo chmod 777 -R /var/nwatch
-#pip install pycurl
-# sudo pacman -S motion
-# wget https://github.com/umlaeute/v4l2loopback/archive/master.zip
-# unzip master.zip
-# cd v4l2loopback-master
-# make
-# sudo make install
-# sudo modprobe v4l2loopback
+
+pip install pycurl
+sudo pacman -S motion mysql php php-sqlite php-apache php-pgsql ffmpeg curl
+wget https://github.com/umlaeute/v4l2loopback/archive/master.zip
+unzip master.zip
+cd v4l2loopback-master
+make
+sudo make install
+sudo modprobe v4l2loopback
 
 cp -r camera /var/nwatch
 cp -r installFiles/nwatch.conf /etc/nwatch.conf
+cp -r installFiles/php.ini /etc/php/php.ini
 cp -r installFiles/motion.conf /etc/motion
 cp -r wifi /var/nwatch
 cp -r nwatchHttp/* /srv/http/nwatch

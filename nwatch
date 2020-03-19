@@ -16,8 +16,12 @@ function killNwatch(){
 }
 
 function startNwatch(){
-	toutch /tmp/nwatch.process
-	toutch /tmp/nwatch
+sudo ifconfig $networkInterface down
+sudo ifconfig $networkInterface up
+sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the network interface. check if it is set up correctly"; exit)
+
+	touch /tmp/nwatch.process
+	touch /tmp/nwatch
 	sh /var/nwatch/camera/alpr.sh &
 	echo $! >> /tmp/nwatch
 	sh /var/nwatch/camera/startCam.sh &
