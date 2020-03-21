@@ -45,7 +45,22 @@ do
 				declare -a wiggleData
 				y=0
 				mac=$(echo ${line[@]} | awk '{print $1}')
-				macVendor="$(curl "http://macvendors.co/api/"$mac"/json"| jq '.result.company'|xargs)"
+
+				# find mac vendor using oui.txt
+				macVendor=$(grep -i "$(echo $mac | cut -c 1-11 | sed "s/://g")" /etc/nwatch/oui.txt -m 1)
+				if [[ $macVendor=="" ]]
+				then
+					macVendor=$(grep -i "$(echo $mac | cut -c 1-9 | sed "s/://g")" /etc/nwatch/oui.txt -m 1)
+				fi
+				if [[ $macVendor == "" ]]
+				then
+					$macVendor=="Unknown"
+				else
+					macVendor=$(echo $macVendor | awk '{print $4 $5 $6 $7 $8 $9}')
+				fi
+				# Backup way to find MAC address
+				# macVendor="$(curl "http://macvendors.co/api/"$mac"/json"| jq '.result.company'|xargs)"
+
 				# runs through every results recieved from wiggle
 				while [[ $(echo $results | jq ".results[$y].trilat")  != "null" ]]
 				do
