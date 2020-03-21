@@ -121,8 +121,8 @@
 	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:40:50');
 	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 06:41:00');
 
-	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('EC:8C:9A:5D:AC:FA','BabyBooBear','2020-03-13 06:40:49');
-	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('EC:8C:9A:5D:AC:FA','FreeWifi','2020-03-13 04:07:10');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('EC:8C:9A:5D:AC:FB','BabyBooBear','2020-03-13 06:40:49');
+	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('EC:8C:9A:5D:FC:FA','FreeWifi','2020-03-13 04:07:10');
 --	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 04:07:20');
 --	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 04:07:30');
 --	insert into SCANNERLIMBO(MAC,ESSID,TIME) values('MACMAC','BabyBooBear','2020-03-13 04:07:40');
