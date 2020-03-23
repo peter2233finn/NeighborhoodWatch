@@ -1,5 +1,3 @@
-	drop user watch@localhost;
-	drop database nwatch;
 	create database nwatch;
 	use nwatch;
 
@@ -27,15 +25,6 @@
 	    TIME TIMESTAMP,
 	    PRIMARY KEY (ID) 
 	);
--- use when event is working
---	CREATE TABLE SCANNERLIMBO (
---	    ID int NOT NULL,
---	    MAC varchar(60) NOT NULL,
---	    ESSID varchar(60) NOT NULL,
---	    TIMESTAMP TIMESTAMP NOT NULL,
---	    FOREIGN KEY (ID) REFERENCES EVENT(ID)
----	);
-
 
 	CREATE TABLE SCANNERLIMBO (
 	    MAC varchar(60),
@@ -52,7 +41,6 @@
 	);
 
 	CREATE TABLE SCANNER (
-	--    ID int NOT NULL AUTO_INCREMENT,
 	    MAC varchar(60),
 	    ESSID varchar(60),
 	    TIME TIMESTAMP,
@@ -62,7 +50,6 @@
 	);
 
 	CREATE TABLE BEACON (
-	--    ID int NOT NULL AUTO_INCREMENT,
 	    MAC varchar(60),
 	    ESSID varchar(60),
 	    TIME TIMESTAMP
