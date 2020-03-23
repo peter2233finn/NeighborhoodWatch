@@ -19,6 +19,7 @@ sudo chmod 777 -R /var/nwatch
 sudo pacman -S unzip wget motion mysql php php-sqlite php-apache php-pgsql ffmpeg curl make
 systemctl enable mysqld
 systemctl enable httpd
+cp -r nwatchHttp/* /srv/http/
 
 # Doenload the MAC address out file
 wget http://standards-oui.ieee.org/oui.txt -P /etc/nwatch
