@@ -75,19 +75,3 @@ yay -S v4l2loopback-dkms
 sudo dkms autoinstall
 
 sudo reboot
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
