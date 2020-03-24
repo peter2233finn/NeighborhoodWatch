@@ -14,7 +14,7 @@ sudo chmod 777 $logDir
 sudo chmod 777 -R /etc/nwatch
 sudo chmod 777 -R /var/nwatch
 
-sudo pacman -S base-devel linux-raspberrypi4-headers dkms
+sudo pacman -S base-devel linux-raspberrypi4-headers dkms jq
 sudo pacman -S unzip wget motion mysql php php-sqlite php-apache php-pgsql ffmpeg curl make  
 systemctl enable mysqld
 systemctl enable httpd
