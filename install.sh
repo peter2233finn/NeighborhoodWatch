@@ -36,6 +36,8 @@ cp -r installFiles/php.ini /etc/php/php.ini
 cp -r installFiles/motion.conf /etc/motion
 cp -r wifi /var/nwatch
 cp -r nwatchHttp/* /srv/http
+sudo cp nwatch /usr/bin/
+sudo chmod +x /usr/bin/nwatch
 
 echo "Adding user nwatch"
 mkdir /home/nwatch
