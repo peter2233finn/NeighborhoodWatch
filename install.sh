@@ -45,6 +45,7 @@ sudo chmod +x /usr/bin/nwatch
 echo "Adding user nwatch"
 mkdir /home/nwatch
 #useradd nwatch -d /home/nwatch/
+#chown nwatch:nwatch /home/nwatch/
 #echo "Enter the password for the user nwatch"
 #passwd nwatch
 
