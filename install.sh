@@ -19,7 +19,7 @@ sudo chmod 777 -R /etc/nwatch.conf
 
 echo "Installing dependancies"
 
-sudo pacman -S base-devel usbutils linux-raspberrypi-headers dkms jq aircrack-ng #linux-headers
+sudo pacman -S base-devel usbutils linux-raspberrypi-headers dkms jq aircrack-ng tcpdump #linux-headers
 sudo pacman -S unzip wget motion mysql php php-sqlite php-apache php-pgsql ffmpeg curl make  
 systemctl enable mysqld
 systemctl enable httpd
