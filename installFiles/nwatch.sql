@@ -11,7 +11,7 @@
 	    PRIMARY KEY (USERID)
 	);
 
-	insert into USERS(USERNAME,PASSWORD) values('admin','password123')
+	insert into USERS(USERNAME,PASSWORD) values('admin','password123');
 
 	CREATE TABLE EVENT (
 	    ID int NOT NULL AUTO_INCREMENT,
