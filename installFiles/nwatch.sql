@@ -11,7 +11,7 @@
 	    PRIMARY KEY (USERID)
 	);
 
-	insert into USERS(USERNAME,PASSWORD) values('admin','password123');
+	insert into USERS(USERNAME,PASSWORD) values('admin','password123')
 
 	CREATE TABLE EVENT (
 	    ID int NOT NULL AUTO_INCREMENT,
@@ -49,6 +49,8 @@
 	    TIME TIMESTAMP,
 	    TRILAT varchar(60),
 	    TRILONG varchar(60),
+	    ADDRESS varchar(120),
+	    VENDOR varchar(60),
 	    LASTSEEN varchar(60)
 	);
 
@@ -73,5 +75,4 @@
 
 	CREATE USER 'watch'@'localhost' IDENTIFIED BY '3342234Pp&^';
 	GRANT ALL PRIVILEGES ON nwatch.* TO 'watch'@'localhost';
-
 
