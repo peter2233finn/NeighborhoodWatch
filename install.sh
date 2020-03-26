@@ -69,7 +69,9 @@ sudo mysql_secure_installation
 echo "Enter password for mysql root user to install the database:"
 read dbPass
 
-mysql -u root -p"$dbPass" -e"drop user watch@localhost;drop database nwatch;"
+mysql -u root -p"$dbPass" -e"drop user watch@localhost;"
+mysql -u root -p"$dbPass" -e"drop database nwatch;"
+
 mysql -u root -p"$dbPass" < installFiles/nwatch.sql
 
 # Install v4l2loopback for the camera
