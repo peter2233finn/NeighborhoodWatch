@@ -16,7 +16,7 @@
 	CREATE TABLE EVENT (
 	    ID int NOT NULL AUTO_INCREMENT,
 	    REGPLATE varchar(60),
-	    PHOTOLOC varchar(60),
+	    PHOTOLOC varchar(120),
 	    TIME TIMESTAMP,
 	    PRIMARY KEY (ID) 
 	);
