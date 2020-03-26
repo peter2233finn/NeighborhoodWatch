@@ -30,7 +30,7 @@ do
 				echo ALREADY IN DB NO NEED TO QUERY WIGGLE
 			else
 				echo NOT IN DB QUERYING WIGGLE
-				results=$(curl -s -H 'Accept:application/json' -u $wiggleAPI --basic "https://api.wigle.net/api/v2/network/search?ssid=$query") || set=0
+				results=$(curl -s -H 'Accept:application/json' -u $wiggleAPI --basic "https://api.wigle.net/api/v2/network/search?ssid=$query")
 
 				if [[ $(echo $results | jq ".success") == "false" ]]
 				then
