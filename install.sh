@@ -19,7 +19,7 @@ sudo chmod 777 -R /etc/nwatch.conf
 
 echo "Installing dependancies"
 
-sudo pacman -S base-devel linux-raspberrypi-headers dkms jq #linux-headers
+sudo pacman -S base-devel linux-raspberrypi-headers dkms jq aircrack-ng #linux-headers
 sudo pacman -S unzip wget motion mysql php php-sqlite php-apache php-pgsql ffmpeg curl make  
 systemctl enable mysqld
 systemctl enable httpd
@@ -78,7 +78,7 @@ mysql -u root -p"$dbPass" < installFiles/nwatch.sql
 # Install v4l2loopback for the camera
 git clone https://aur.archlinux.org/yay.git
 cd yay
-sudo makepkg -si
+makepkg -si
 yay -Sy
 #yay -S v4l2loopback-dkms
 #sudo dkms autoinstall
