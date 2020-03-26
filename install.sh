@@ -4,7 +4,7 @@
 #	exit 0
 #fi
 echo "Installing the files into /etc and /var"
-cp -r installFiles/nwatch.conf /etc/nwatch.conf
+sudo cp -r installFiles/nwatch.conf /etc/nwatch.conf
 . /etc/nwatch.conf
 
 sudo rm -r /etc/nwatch
@@ -14,6 +14,8 @@ sudo touch $logDir
 sudo chmod 777 $logDir
 sudo chmod 777 -R /etc/nwatch
 sudo chmod 777 -R /var/nwatch
+sudo chmod 777 -R /etc/nwatch.conf
+
 
 echo "Installing dependancies"
 
