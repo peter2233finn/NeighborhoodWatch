@@ -22,6 +22,7 @@ function killNwatch(){
 }
 
 function startNwatch(){
+sudo ip link set wlan1 up
 sudo ifconfig $networkInterface down
 sudo ifconfig $networkInterface up
 sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the network interface. check if it is set up correctly"; exit)
