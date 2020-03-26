@@ -26,7 +26,7 @@ sudo ifconfig $networkInterface down
 sudo ifconfig $networkInterface up
 sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the network interface. check if it is set up correctly"; exit)
 
-	airmon-ng start $networkInterface
+	sudo airmon-ng start $networkInterface
 	touch /tmp/nwatch.process
 	touch /tmp/nwatch
 	sh /var/nwatch/camera/alpr.sh &
@@ -68,4 +68,4 @@ else
 	echo "\"nwatch --stop\" to stop the service"
 fi
 
-#sudo chmod 7a77 /dev/video0
+sudo chmod 777 /dev/video0
