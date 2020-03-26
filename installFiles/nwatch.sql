@@ -50,13 +50,13 @@
 	    TRILAT varchar(60),
 	    TRILONG varchar(60),
 	    ADDRESS varchar(120),
-	    VENDOR varchar(60),
 	    LASTSEEN varchar(60)
 	);
 
 	CREATE TABLE BEACON (
 	    MAC varchar(60),
 	    ESSID varchar(60),
+	    VENDOR varchar(60),
 	    TIME TIMESTAMP
 	);
 
