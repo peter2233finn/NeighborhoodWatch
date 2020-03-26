@@ -13,7 +13,8 @@ do
 		if [[ $(cat /tmp/nwatch.process | grep limitReached|head -n 1) == "limitReached" ]]
 		then
 			echo "Wiggle limit still in effect. Will try again in 30 minuits." >> $logDir
-			sleep 30
+			sleep 30m
+			echo "" > /tmp/nwatch.process
 			
 			# makes sure its not the first row, which holds no relivand data
 		elif (( $x != 0 ))
