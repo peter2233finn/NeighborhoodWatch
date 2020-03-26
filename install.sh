@@ -10,11 +10,14 @@ sudo cp -r installFiles/nwatch.conf /etc/nwatch.conf
 sudo rm -r /etc/nwatch
 sudo mkdir /etc/nwatch
 sudo mkdir /var/nwatch
+sudo mkdir /srv/http/camEvents/
 sudo touch $logDir
 sudo chmod 777 $logDir
 sudo chmod 777 -R /etc/nwatch
 sudo chmod 777 -R /var/nwatch
 sudo chmod 777 -R /etc/nwatch.conf
+sudo chmod 777 /srv/http/camEvents/
+
 
 
 echo "Installing dependancies"
