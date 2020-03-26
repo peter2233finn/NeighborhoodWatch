@@ -1,8 +1,9 @@
-if (( $UID != 0 ))
-then
-	echo "The install needs root permissions"
-	exit 0
-fi
+#if (( $UID != 0 ))
+#then
+#	echo "The install needs root permissions"
+#	exit 0
+#fi
+echo "Installing the files into /etc and /var"
 cp -r installFiles/nwatch.conf /etc/nwatch.conf
 . /etc/nwatch.conf
 
@@ -14,13 +15,15 @@ sudo chmod 777 $logDir
 sudo chmod 777 -R /etc/nwatch
 sudo chmod 777 -R /var/nwatch
 
-sudo pacman -S base-devel linux-raspberrypi4-headers dkms jq
+echo "Installing dependancies"
+
+sudo pacman -S base-devel linux linux-headers dkms jq
 sudo pacman -S unzip wget motion mysql php php-sqlite php-apache php-pgsql ffmpeg curl make  
 systemctl enable mysqld
 systemctl enable httpd
 cp -r nwatchHttp/* /srv/http/
 
-# Doenload the MAC address out file
+# Download the MAC address out file
 wget http://standards-oui.ieee.org/oui.txt -P /etc/nwatch
 pip install pycurl
 
@@ -31,19 +34,19 @@ pip install pycurl
 #sudo make install
 #sudo modprobe v4l2loopback
 
-cp -r camera /var/nwatch
-cp -r installFiles/php.ini /etc/php/php.ini
-cp -r installFiles/motion.conf /etc/motion
-cp -r wifi /var/nwatch
-cp -r nwatchHttp/* /srv/http
+sudo cp -r camera /var/nwatch
+sudo cp -r installFiles/php.ini /etc/php/php.ini
+sudo cp -r installFiles/motion.conf /etc/motion
+sudo cp -r wifi /var/nwatch
+sudo cp -r nwatchHttp/* /srv/http
 sudo cp nwatch /usr/bin/
 sudo chmod +x /usr/bin/nwatch
 
 echo "Adding user nwatch"
 mkdir /home/nwatch
-useradd nwatch -d /home/nwatch/
-echo "Enter the password for the user nwatch"
-passwd nwatch
+#useradd nwatch -d /home/nwatch/
+#echo "Enter the password for the user nwatch"
+#passwd nwatch
 
 
 sudo cp installFiles/httpd.conf /etc/httpd/conf/httpd.conf
@@ -57,8 +60,8 @@ echo extension=pdo_sqlite >> /etc/php/php.ini
 sudo chmod 644 /etc/php/php.ini
 
 # Enable the database
-mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
-mysql_secure_installation
+sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+sudo mysql_secure_installation
 
 echo "Enter password for mysql root user to install the database:"
 read dbPass
@@ -69,9 +72,9 @@ mysql -u root -p"$dbPass" < installFiles/nwatch.sql
 # Install v4l2loopback for the camera
 git clone https://aur.archlinux.org/yay.git
 cd yay
-makepkg -si
+sudo makepkg -si
 yay -Sy
-yay -S v4l2loopback-dkms
-sudo dkms autoinstall
+#yay -S v4l2loopback-dkms
+#sudo dkms autoinstall
 
-sudo reboot
+#sudo reboot
