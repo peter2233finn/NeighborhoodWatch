@@ -3,7 +3,8 @@
 function keepAlive(){
 	echo "Process \"$2\" started as PID $1" >> $logDir
 	while true
-	do		lsof -p 2380 +r $1 &>/dev/null
+	do	
+		lsof -p 2380 +r $1 &>/dev/null
 		echo "[ERR]: Process with PID $1 failed. Attempting to restart with command \"$2\"" >> $logDir
 		sleep 10
 		$2
@@ -34,7 +35,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
 	echo $! >> /tmp/nwatch
 	sh /var/nwatch/camera/startCam.sh &
 	echo $! >> /tmp/nwatch
-	motion &
+	sudo motion &
 	echo $! >> /tmp/nwatch
 	. /var/nwatch/wifi/dbSort.sh &
 	echo $! >> /tmp/nwatch
@@ -47,7 +48,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
 	echo $! >> /tmp/nwatch
 	keepAlive $PID2 "sh /var/nwatch/camera/startCam.sh &" & 
 	echo $! >> /tmp/nwatch
-	keepAlive $PID3 "motion &" &
+	keepAlive $PID3 "sudo motion &" &
 	echo $! >> /tmp/nwatch
 	keepAlive $PID4 ". /var/nwatch/wifi/dbSort.sh &" &
 	echo $! >> /tmp/nwatch
