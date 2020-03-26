@@ -11,9 +11,14 @@ function keepAlive(){
 }
 
 function killNwatch(){
-	kill $(cat /tmp/nwatch | tr "\n" " ")
-	rm /tmp/nwatch
-	pkill ffmpeg
+	if [ ! -f /tmp/nwatch ]; then
+		echo "Nwatch not running"
+	else
+		kill $(cat /tmp/nwatch | tr "\n" " ")
+		rm /tmp/nwatch
+		pkill ffmpeg
+		airmon-ng stop $networkInterface
+	fi
 }
 
 function startNwatch(){
@@ -21,6 +26,7 @@ sudo ifconfig $networkInterface down
 sudo ifconfig $networkInterface up
 sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the network interface. check if it is set up correctly"; exit)
 
+	airmon-ng start $networkInterface
 	touch /tmp/nwatch.process
 	touch /tmp/nwatch
 	sh /var/nwatch/camera/alpr.sh &
