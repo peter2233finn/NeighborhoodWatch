@@ -62,7 +62,7 @@ do
 					address=$(echo $(echo $results | jq ".results[$y].housenumber"" "|xargs)", " | grep -v "null, ")
 					address+=$(echo $(echo $results | jq ".results[$y].road"" "|xargs)", " | grep -v "null, ")
 					address+=$(echo $(echo $results | jq ".results[$y].city"" "|xargs)", " | grep -v "null, ")
-					address+=$(echo $(echo $results | jq ".results[$y].country"|xargs)", " | grep -v "null, ")
+					address+=$(echo $(echo $results | jq ".results[$y].country"|xargs)"." | grep -v "null, ")
 					syntaxAdd=$(echo $address | tr "'" "\"")
 					if (( $set == 1 ))
 					then
