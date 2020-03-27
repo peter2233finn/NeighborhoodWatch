@@ -13,13 +13,20 @@ function keepAlive(){
 
 function killNwatch(){
 	if [ ! -f /tmp/nwatch ]; then
-		echo "Nwatch not running"
+		echo "Nwatch not running. Will attempt to reset mon interfaces anyway"
 	else
 		kill $(cat /tmp/nwatch | tr "\n" " ")
 		rm /tmp/nwatch
 		pkill ffmpeg
 		airmon-ng stop $networkInterface
 	fi
+	IFS=$'\n'
+	allMon=($(ifconfig | grep mon| awk '{print $1}'))
+	for (( i=0; i<${#allMon[@]}; i++ ))
+	do
+	        sudo airmon-ng stop "${allMon[i]::-1}"
+	done
+	ifconfig $networkInterface up
 }
 
 function startNwatch(){
