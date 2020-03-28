@@ -42,8 +42,20 @@ while ($row = $conn->fetch()) {
 }
 if ($resultNum == 0)
 {
+$conn = $connection->query ("SELECT TIME, COUNT(*) FROM SCANNERLIMBO ORDER BY TIME ASC LIMIT 1");
+while ($row = $conn->fetch()) {
+	$resultsNum=$row['COUNT(*)'];
+	$first=$row['TIME'];
+}
+$resNum=intval($resultsNum);
+	if ($resNum == 0){
+	echo '</tr><tr><td><center>No wifi beacons found.<br>All wifi beacons are processed</td></tr>';
+	
+	}
+	else{
 	echo '</tr><tr><td><center>No wifi beacons found.<br>
-		There may still however be some waiting to be processed in the backlog.</center></td></tr>';
+		However there are '.$resultsNum.' results waiting to be processed, dating back from '.$first.'.</center></td></tr>';
+	}	
 }
 else{
 
@@ -54,9 +66,6 @@ echo '</table></center></td></tr>
 <tr><td></td></tr>
 </table>';
 ?>
-
-
 </body>
 </html>
-
 </form>
