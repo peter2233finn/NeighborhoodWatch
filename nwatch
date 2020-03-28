@@ -32,6 +32,11 @@ function killNwatch(){
 }
 
 function startNwatch(){
+
+sed -i "/threshold/c\threshold $threshold" /etc/motion/motion.conf
+sed -i "/pre_capture/c\pre_capture $pre_capture" /etc/motion/motion.conf
+sed -i "/post_capture/c\post_capture $post_capture" /etc/motion/motion.conf
+
 sudo ip link set wlan1 up
 sudo ifconfig $networkInterface down
 sudo ifconfig $networkInterface up
