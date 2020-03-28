@@ -41,6 +41,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
 	sh /var/nwatch/camera/alpr.sh &
 	echo $! >> /tmp/nwatch
 	sh /var/nwatch/camera/startCam.sh &
+	sudo chmod 777 /dev/video0
 	echo $! >> /tmp/nwatch
 	sudo motion &
 	echo $! >> /tmp/nwatch
@@ -77,4 +78,3 @@ else
 	echo "\"nwatch --stop\" to stop the service"
 fi
 
-sudo chmod 777 /dev/video0
