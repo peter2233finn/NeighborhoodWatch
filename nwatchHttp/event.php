@@ -42,7 +42,8 @@ while ($row = $conn->fetch()) {
 }
 if ($resultNum == 0)
 {
-	echo '<td>No wifi beacons found.</td>';
+	echo '</tr><tr><td><center>No wifi beacons found.<br>
+		There may still however be some waiting to be processed in the backlog.</center></td></tr>';
 }
 else{
 
