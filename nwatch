@@ -1,15 +1,17 @@
 . /etc/nwatch.conf
 
-function keepAlive(){
+function watchDog(){
 	echo "Process \"$2\" started as PID $1" >> $logDir
 	while true
 	do	
-		lsof -p 2380 +r $1 &>/dev/null
-		echo "[ERR]: Process with PID $1 failed. Attempting to restart with command \"$2\"" >> $logDir
-		sleep 10
-		$2
+		lsof -p $1 +r 1 &>/dev/null
+		echo "[ERR]: Process with PID $1 stopped. Attempting to restart with command \"$2\" in 3 seconds." >> $logDir
+		$2 &
+		sleep 3
+		watchDog $! "$2"
 	done
 }
+
 
 function killNwatch(){
 	if [ ! -f /tmp/nwatch ]; then
@@ -38,6 +40,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
 	sudo airmon-ng start $networkInterface
 	touch /tmp/nwatch.process
 	touch /tmp/nwatch
+	
 	sh /var/nwatch/camera/alpr.sh &
 	echo $! >> /tmp/nwatch
 	sh /var/nwatch/camera/startCam.sh &
@@ -50,17 +53,17 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
 	sh /var/nwatch/wifi/insert.sh &
 	echo $! >> tmp/nwatch
 
-	keepAlive $TESTPID "sh test1.sh &" &
+	watchDog $TESTPID "sh test1.sh" &
 	echo $! >> /tmp/nwatch
-	keepAlive $PID1 "sh /var/nwatch/camera/alpr.sh &" &
+	watchDog $PID1 "sh /var/nwatch/camera/alpr.sh" &
 	echo $! >> /tmp/nwatch
-	keepAlive $PID2 "sh /var/nwatch/camera/startCam.sh &" & 
+	watchDog $PID2 "sh /var/nwatch/camera/startCam.sh" & 
 	echo $! >> /tmp/nwatch
-	keepAlive $PID3 "sudo motion &" &
+	watchDog $PID3 "sudo motion" &
 	echo $! >> /tmp/nwatch
-	keepAlive $PID4 ". /var/nwatch/wifi/dbSort.sh &" &
+	watchDog $PID4 ". /var/nwatch/wifi/dbSort.sh" &
 	echo $! >> /tmp/nwatch
-	keepAlive $PID5 "sh /var/nwatch/wifi/insert.sh &" &
+	watchDog $PID5 "sh /var/nwatch/wifi/insert.sh" &
 	echo $! >> /tmp/nwatch
 }
 
@@ -77,4 +80,3 @@ else
 	echo "\"nwatch --start\" to start the service"
 	echo "\"nwatch --stop\" to stop the service"
 fi
-
