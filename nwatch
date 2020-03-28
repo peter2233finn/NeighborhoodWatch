@@ -18,10 +18,11 @@ function killNwatch(){
 		echo "Nwatch not running. Will attempt to reset mon interfaces anyway"
 	else
 		kill $(cat /tmp/nwatch | tr "\n" " ")
-		rm /tmp/nwatch
 		pkill ffmpeg
-		airmon-ng stop $networkInterface
 	fi
+
+	rm /tmp/nwatch
+	rm /tmp/nwatch.process
 	IFS=$'\n'
 	allMon=($(ifconfig | grep mon| awk '{print $1}'))
 	for (( i=0; i<${#allMon[@]}; i++ ))
@@ -32,6 +33,11 @@ function killNwatch(){
 }
 
 function startNwatch(){
+if [[ -f /tmp/nwatch.process ]]; 
+then 
+	echo "NeighborhoodWatch is already running. use \"nwatch --stop\" first." 
+	exit
+fi
 
 sed -i "/threshold/c\threshold $threshold" /etc/motion/motion.conf
 sed -i "/pre_capture/c\pre_capture $pre_capture" /etc/motion/motion.conf
@@ -80,8 +86,15 @@ elif [[ $* == *"--stop"* ]]
 then
 	echo "Stopping Neighbourhood watch."
 	killNwatch
+elif [[ $* == *"--restart"* ]] 
+then
+	echo "Restarting Neighbourhood watch."
+	killNwatch
+	sleep 2
+	startNwatch
 else
 	echo "Usage:"
 	echo "\"nwatch --start\" to start the service"
+	echo "\"nwatch --restart\" to restart the service"
 	echo "\"nwatch --stop\" to stop the service"
 fi
