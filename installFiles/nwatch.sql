@@ -21,14 +21,6 @@
 	    PRIMARY KEY (ID) 
 	);
 
-	CREATE TABLE TESTEVENT (
-	    ID int NOT NULL AUTO_INCREMENT,
-	    REGPLATE varchar(60),
-	    PHOTOLOC varchar(60),
-	    TIME TIMESTAMP,
-	    PRIMARY KEY (ID) 
-	);
-
 	CREATE TABLE SCANNERLIMBO (
 	    ID int NOT NULL AUTO_INCREMENT,
 	    MAC varchar(60),
@@ -64,10 +56,10 @@
 
 	CREATE TABLE LISTS (
 	    LISTID int NOT NULL AUTO_INCREMENT,
-	    WLIST varchar(15),
-	    MACWLIST varchar(17),
-	    MACBLIST varchar(17),
-	    BLIST varchar(15),
+	    WLIST varchar(15) UNIQUE,
+	    MACWLIST varchar(17) UNIQUE,
+	    MACBLIST varchar(17) UNIQUE,
+	    BLIST varchar(15) UNIQUE,
 	    USERID int NOT NULL,
 	    TIMESTAMP TIMESTAMP,
 	    PRIMARY KEY (LISTID),
