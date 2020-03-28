@@ -17,7 +17,7 @@
 				$conn = $connection->query("select VIDID,VIDDIR,PLATE,TIME from CAMEVENT ORDER BY TIME DESC");
 				while ($row = $conn->fetch()) {
 					if ($row['PLATE'] == null){
-						$plate="No lisence plate";
+						$plate="No licence plate";
 					}
 					else{
 						$plate=$row['PLATE'];
