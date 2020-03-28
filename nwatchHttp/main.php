@@ -1,14 +1,9 @@
-
 <html>
 <link rel="stylesheet" href="style.css">
 <body>
 	<table class="mainTable">
 	<tr>
-		<td><center>
-		<?php
-		   include "camFeed.php";
-		?>
-		</center><td>
+		<td>
 			<p class="bold">Events</p> 
 			<?php
 				include "dbConnect.php";
@@ -17,7 +12,7 @@
 				$conn = $connection->query("select VIDID,VIDDIR,PLATE,TIME from CAMEVENT ORDER BY TIME DESC");
 				while ($row = $conn->fetch()) {
 					if ($row['PLATE'] == null){
-						$plate="No licence plate";
+						$plate="No lisence plate";
 					}
 					else{
 						$plate=$row['PLATE'];
@@ -32,7 +27,7 @@
 
 				}
 
-				echo '</table></td><tr><td>
+				echo '</table></td><td>
 				<p class="bold">Settings</p>
 				<table>
 				<tr><td>Vehicle settings</td><td>Account settings</td></tr><tr><td>Whitelist vehicles
