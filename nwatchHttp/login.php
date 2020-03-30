@@ -1,6 +1,6 @@
 <?php
 $connection = new PDO("mysql:host=localhost;dbname=nwatch", "watch", "3342234Pp&^");
-
+$msg="";
 //check for cookie admin
 if($_COOKIE['LogUser'] == "admin"){
 	adminConsole();
@@ -52,6 +52,7 @@ function userAuth(){
 		header("Location: main.php");
 	}
 
+	echo $msg;
 }
 
 
@@ -77,7 +78,7 @@ function adminConsole(){
 	echo '<form method="post" action="login.php">';
 	$stmt = $conn->query("SELECT * FROM USERS");
 	while ($row = $stmt->fetch()) {
-		echo '<tr><td><input type="checkbox" name="'.$row['USERID'].'"></td><td>';
+		echo '<tr><td width="1%"><input type="checkbox" name="'.$row['USERID'].'"></td><td>';
 		echo $row['USERNAME']."</td><td>".$row['FNAME']."</td><td>".$row['LNAME']."</td><td>".$row['HOUSE']."</td></tr>";
 	}
 	echo '<tr><td><select class="bt1" name="action">
@@ -87,7 +88,6 @@ function adminConsole(){
 	     </select></td><td><input class="bt1" type="submit" value="Submit"></form></td></tr></table>';
 	
 	if($_POST["action"] == "del"){
-		$msg="";
 		$ter=0;
 		foreach($_POST as $key => $value)
 		{
@@ -105,8 +105,8 @@ function adminConsole(){
 				}
 			}
 		}
-		echo $msg;
 		$_POST = array();
+	echo $msg;
 	}
 
 
@@ -118,10 +118,10 @@ function adminConsole(){
 			$edit=$conn->query("SELECT * FROM USERS WHERE USERID = '". $key."'");
 			while ($row = $edit->fetch()) {
 				echo '<tr>
-					<td><input type="text" name="'.$row["USERID"].' user" value="'.$row["USERNAME"].'"></td>
-					<td><input type="text" name="'.$row["USERID"].' fname" value="'.$row["FNAME"].'"></td>
-					<td><input type="text" name="'.$row["USERID"].' lname" value="'.$row["LNAME"].'"></td>
-					<td><input type="text" name="'.$row["USERID"].' add" value="'.$row["HOUSE"].'"></td>
+					<td><input type="text" name="'.$row["USERID"].' user" value="'.$row["USERNAME"].'" required></td>
+					<td><input type="text" name="'.$row["USERID"].' fname" value="'.$row["FNAME"].'" required></td>
+					<td><input type="text" name="'.$row["USERID"].' lname" value="'.$row["LNAME"].'" required></td>
+					<td><input type="text" name="'.$row["USERID"].' add" value="'.$row["HOUSE"].'" required></td>
 					<td><input type="password" name="'.$row["USERID"].' pas1"></td>
 					<td><input type="password" name="'.$row["USERID"].' pas2"></td></tr>';
 			}
@@ -132,22 +132,46 @@ function adminConsole(){
 			  <input type="submit" class="bt1" value="Update"></td></tr></form></table>';
 		//header("Location: login.php");
 		
+	echo $msg;
 	}
 	elseif($_POST["action"] == "doAdd"){
 		if ($_POST['pas1'] == $_POST['pas2']){
-			$conn->query("insert into USERS(FNAME,LNAME,HOUSE,USERNAME,PASSWORD) values('".$_POST['fname']."','".$_POST['lname']."','".$_POST['add']."','".$_POST['user']."','".$_POST['pas1']."');");
-			echo("The new user has been added.");
-			$_POST = array();
+			$stmt = $conn->query("SELECT USERNAME FROM USERS");
+			$identicalSetter=0;
+			while ($row = $stmt->fetch()) {
+				if($row['USERNAME'] == $_POST['user']){
+					$identicalSetter=1;
+					break;
+				}
+			}	
+			if($identicalSetter == 0){
+				if($_POST["pas1"] != "" && $_POST["pas2"] != ""){
+					if($_POST["pas1"] == $_POST["pas2"]){
+						$conn->query("insert into USERS(FNAME,LNAME,HOUSE,USERNAME,PASSWORD) values('".$_POST['fname']."','".$_POST['lname']."','".$_POST['add']."','".$_POST['user']."','".$_POST['pas1']."');");
+						$msg.="The new user has been added.";
+					}			
+					else{
+						$msg.="Passwords for user ".$_POST[$x."_user"]." don't match. Try again.<br>";
+					}
+				}
+				else{
+					$msg.="Please add a password for the user";
+				}
+			}
+			elseif($identicalSetter==1){
+				echo "Another user has that username. <br>There cannot be identical usernames.";
+			}
+			
 		}
 		else{
-			echo("The passwords dont match. Try again.");
+			$msg.="The passwords dont match. Try again.";
 		}
+	echo $msg;
 }
 	elseif($_POST["action"] == "doUpdate" && count($_POST) != 1){
 		$numUpdates=(sizeof($_POST)-1)/6;
 		$query=$conn->query("SELECT MAX(USERID) FROM USERS");
 		$num=$query->fetch();
-		$msg="";
 		for ($x = 0; $x <= $num[0]; $x++) {
 
 			if(isset($_POST[$x."_user"])){
@@ -158,47 +182,63 @@ function adminConsole(){
 				else{
 					$username=trim($_POST[$x."_user"]);
 				}
-
-
+				$identicalSetter=0;
+				$check = $conn->query("SELECT USERNAME FROM USERS WHERE USERID != ".$x);
+				while ($row = $check->fetch()) {
+					if($row['USERNAME'] == $username){
+						$identicalSetter=1;
+						break;
+					}
+				}
 				if($_POST[$x."_pas1"] != "" && $_POST[$x."_pas2"] != ""){
 					if($_POST[$x."_pas1"] == $_POST[$x."_pas2"]){
-						$sql="UPDATE USERS SET FNAME='".$_POST[$x."_fname"]."',
-					    LNAME='".trim($_POST[$x."_lname"],"\v")."
-					    ',HOUSE='".trim($_POST[$x."_add"],"\v")."
-					    ',USERNAME='".trim($username,"\v")."
-					    ',PASSWORD='".$_POST[$x."_pas1"]."
-					    ' WHERE USERID=".$x.";";
-						$query=$conn->query($sql);
-						$msg.= "Updated user ".trim($_POST[$x."_user"]).".<br>";
+						if($identicalSetter == 1){
+							$msg.="A user with the username ".$username." already exists.";
+						}
+						else{
+							$msg.= "Updated user ".trim($_POST[$x."_user"],"\v").".<br>";
+							$sql="UPDATE USERS SET FNAME='".trim($_POST[$x."_fname"],"\v")."',
+						    LNAME='".trim($_POST[$x."_lname"],"\v")."
+						    ',HOUSE='".trim($_POST[$x."_add"],"\v")."
+						    ',USERNAME='".trim($username,"\v")."
+						    ',PASSWORD='".trim($_POST[$x."_pas1"],"\v")."
+						    ' WHERE USERID=".$x.";";
+							$query=$conn->query($sql);
+						}
 					}			
 					else{
-						$msg.="Passwods for user ".$_POST[$x."_user"]." don not match. Try again.<br>";
+						$msg.="Passwords for user ".$_POST[$x."_user"]." don not match. Try again.<br>";
 					}
 				}
 			
 				else{
-					$query=$conn->query("UPDATE USERS SET FNAME='".$_POST[$x."_fname"]."',
-					    LNAME='".trim($_POST[$x."_lname"])."
-					    ',HOUSE='".trim($_POST[$x."_add"])."i
-					    ',USERNAME='".trim($username)."
-					    ' WHERE USERID=".$x);
-					$msg.="Updated user ".trim($_POST[$x."_user"])." with no change to the pasworad<br>";
+					if($identicalSetter==1){
+						$msg.="A user with the username ".$username." already exists.";
+					}
+					else{
+						$query=$conn->query("UPDATE USERS SET FNAME='".$_POST[$x."_fname"]."',
+						    LNAME='".trim($_POST[$x."_lname"],"\v")."
+						    ',HOUSE='".trim($_POST[$x."_add"],"\v")."i
+						    ',USERNAME='".trim($username,"\v")."
+						    ' WHERE USERID=".$x);
+						echo "Updated user ".trim($_POST[$x."_user"])." with no change to the password<br>";
+					}
 				}
 			}
 		}
-		echo $msg;
+	echo $msg;
 	}
 
 	elseif($_POST["action"] == "add"){
 		echo '<br>Add user:
 		<br><br><table><tr><td>Username</td><td>Firstname</td><td>Last name</td><td>House number</td><td>New password</td><td>Repeat password
 		<form method="post" action="login.php"></td><tr>
-		<td><input type="text" name="user"></td>
-		<td><input type="text" name="fname"></td>
-		<td><input type="text" name="lname"></td>
-		<td><input type="text" name="add"></td>
-		<td><input type="password" name="pas1"></td>
-		<td><input type="password" name="pas2"></td></tr>
+		<td><input type="text" name="user" required></td>
+		<td><input type="text" name="fname" required></td>
+		<td><input type="text" name="lname" required></td>
+		<td><input type="text" name="add" required></td>
+		<td><input type="password" name="pas1" required></td>
+		<td><input type="password" name="pas2" required></td></tr>
 		<tr><td>
 		<input type="hidden" id="action2" name="action" value="doAdd">
 		<input type="submit" class="bt1" value="Update"></td></tr></form></table>';
