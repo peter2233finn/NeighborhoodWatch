@@ -3,15 +3,15 @@
 
 	CREATE TABLE USERS (
 	    USERID int NOT NULL AUTO_INCREMENT,
-	    FNAME varchar(60),
-	    LNAME varchar(60),
+	    FNAME varchar(60) NOT NULL,
+	    LNAME varchar(60) NOT NULL,
 	    HOUSE varchar(120),
-	    USERNAME varchar(20) UNIQUE,
-	    PASSWORD varchar(20),
+	    USERNAME varchar(20) UNIQUE NOT NULL,
+	    PASSWORD varchar(20) NOT NULL,
 	    PRIMARY KEY (USERID)
 	);
 
-	insert into USERS(USERNAME,PASSWORD) values('admin','password123')
+	insert into USERS(USERNAME,PASSWORD) values('admin','password123');
 
 	CREATE TABLE EVENT (
 	    ID int NOT NULL AUTO_INCREMENT,
