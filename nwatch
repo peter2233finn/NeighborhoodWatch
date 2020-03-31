@@ -71,7 +71,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
         sh /var/nwatch/wifi/insert.sh &
         echo $! >> tmp/nwatch
         PID4=$!
-        sudo motion &
+        motion &
         echo $! >> /tmp/nwatch
         PID5=$!
 
