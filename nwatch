@@ -5,13 +5,14 @@ function watchDog(){
         PID=$1
         while true
         do
-                sleep 3m;
+                sleep 3;
                 lsof -p $PID +r 1 &>/dev/null
-                echo "[ERR]: Process with PID $1 stopped. Attempting to restart with command \"$2\" in 3 seconds." >> $logDir;
+                echo "[ERR]: Process with PID $PID stopped. Attempting to restart with command \"$2\" in 3 seconds." >> $logDir
                 $2 &
-                PID=$!
-                echo $PID >> /tmp/nwatch.process
-                echo "New PID is $PID." >> $logDir
+                PID2=$!
+                echo "New PID is $PID."  >> $logDir
+                sed -i -e 's/$PID/$PID2/g' /tmp/nwatch.process
+                PID=$PID2
         done
 }
 
@@ -74,7 +75,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
         echo $! >> /tmp/nwatch
         PID5=$!
 
-        watchDog $TESTPID "sh test1.sh" &
+
         echo $! >> /tmp/nwatch
         watchDog $PID1 "sh /var/nwatch/camera/alpr.sh" &
         echo $! >> /tmp/nwatch
