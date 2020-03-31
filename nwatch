@@ -95,7 +95,7 @@ then
         else
                 echo "Neighbourhood watch is running under the following PIDs:"
                 cat /tmp/nwatch | tr "\n" " "
-                printf "\nThe log file is at $logDir"
+                printf "\nThe log file is at $logDir\n"
         fi
 elif [[ $* == *"--stop"* ]] 
 then
