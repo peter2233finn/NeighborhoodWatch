@@ -51,10 +51,8 @@ else{
                 $conn = $connection->query("INSERT INTO LISTS(BLIST, USERID) VALUES('".$item."','". $_COOKIE['LogUser']."')");
         }
         setcookie("msg",$msg);
-        header("Location: main.php");
-	die();
 }
 
-header("Location: index.php");
+header("Location: main.php");
 
 ?>
