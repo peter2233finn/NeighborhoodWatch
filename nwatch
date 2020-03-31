@@ -1,42 +1,42 @@
 . /etc/nwatch.conf
 
 function watchDog(){
-	echo "Process \"$2\" started as PID $1" >> $logDir
-	while true
-	do	
-		lsof -p $1 +r 1 &>/dev/null
-		echo "[ERR]: Process with PID $1 stopped. Attempting to restart with command \"$2\" in 3 seconds." >> $logDir
-		$2 &
-		sleep 3
-		watchDog $! "$2"
-	done
+        echo "Process \"$2\" started as PID $1" >> $logDir
+        while true
+        do
+                lsof -p $1 +r 1 &>/dev/null
+                echo "[ERR]: Process with PID $1 stopped. Attempting to restart with command \"$2\" in 3 seconds." >> $logDir
+                $2 &
+                sleep 3
+                watchDog $! "$2"
+        done
 }
 
 
 function killNwatch(){
-	if [ ! -f /tmp/nwatch ]; then
-		echo "Nwatch not running. Will attempt to reset mon interfaces anyway"
-	else
-		kill $(cat /tmp/nwatch | tr "\n" " ")
-		pkill ffmpeg
-	fi
+        if [ ! -f /tmp/nwatch ]; then
+                echo "Nwatch not running. Will attempt to reset mon interfaces anyway"
+        else
+                kill $(cat /tmp/nwatch | tr "\n" " ")
+                pkill ffmpeg
+        fi
 
-	rm /tmp/nwatch
-	rm /tmp/nwatch.process
-	IFS=$'\n'
-	allMon=($(ifconfig | grep mon| awk '{print $1}'))
-	for (( i=0; i<${#allMon[@]}; i++ ))
-	do
-	        sudo airmon-ng stop "${allMon[i]::-1}"
-	done
-	ifconfig $networkInterface up
+        rm /tmp/nwatch
+        rm /tmp/nwatch.process
+        IFS=$'\n'
+        allMon=($(ifconfig | grep mon| awk '{print $1}'))
+        for (( i=0; i<${#allMon[@]}; i++ ))
+        do
+                sudo airmon-ng stop "${allMon[i]::-1}"
+        done
+        ifconfig $networkInterface up
 }
 
 function startNwatch(){
 if [[ -f /tmp/nwatch.process ]]; 
 then 
-	echo "NeighborhoodWatch is already running. use \"nwatch --stop\" first." 
-	exit
+        echo "NeighborhoodWatch is already running. use \"nwatch --stop\" first." 
+        exit
 fi
 
 sed -i "/threshold/c\threshold $threshold" /etc/motion/motion.conf
@@ -47,54 +47,69 @@ sudo ip link set wlan1 up
 sudo ifconfig $networkInterface down
 sudo ifconfig $networkInterface up
 sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the network interface. check if it is set up correctly"; exit)
-	modprobe v4l2loopback
-	sudo airmon-ng start $networkInterface
-	touch /tmp/nwatch.process
-	touch /tmp/nwatch
-	
-	sh /var/nwatch/camera/alpr.sh &
-	echo $! >> /tmp/nwatch
-	sh /var/nwatch/camera/startCam.sh &
-	sudo chmod 777 /dev/video0
-	echo $! >> /tmp/nwatch
-	sudo motion &
-	echo $! >> /tmp/nwatch
-	. /var/nwatch/wifi/dbSort.sh &
-	echo $! >> /tmp/nwatch
-	sh /var/nwatch/wifi/insert.sh &
-	echo $! >> tmp/nwatch
+        modprobe v4l2loopback
+        sudo airmon-ng start $networkInterface
+        touch /tmp/nwatch.process
+        touch /tmp/nwatch
 
-	watchDog $TESTPID "sh test1.sh" &
-	echo $! >> /tmp/nwatch
-	watchDog $PID1 "sh /var/nwatch/camera/alpr.sh" &
-	echo $! >> /tmp/nwatch
-	watchDog $PID2 "sh /var/nwatch/camera/startCam.sh" & 
-	echo $! >> /tmp/nwatch
-	watchDog $PID3 "sudo motion" &
-	echo $! >> /tmp/nwatch
-	watchDog $PID4 ". /var/nwatch/wifi/dbSort.sh" &
-	echo $! >> /tmp/nwatch
-	watchDog $PID5 "sh /var/nwatch/wifi/insert.sh" &
-	echo $! >> /tmp/nwatch
+        sh /var/nwatch/camera/alpr.sh &
+        echo $! >> /tmp/nwatch
+        PID1=$!
+        sh /var/nwatch/camera/startCam.sh &
+        sudo chmod 777 /dev/video0
+        echo $! >> /tmp/nwatch
+        PID2=$!
+        . /var/nwatch/wifi/dbSort.sh &
+        echo $! >> /tmp/nwatch
+        PID3=$!
+        sh /var/nwatch/wifi/insert.sh &
+        echo $! >> tmp/nwatch
+        PID4=$!
+        sudo motion &
+        echo $! >> /tmp/nwatch
+        PID5=$!
+
+        watchDog $TESTPID "sh test1.sh" &
+        echo $! >> /tmp/nwatch
+        watchDog $PID1 "sh /var/nwatch/camera/alpr.sh" &
+        echo $! >> /tmp/nwatch
+        watchDog $PID2 "sh /var/nwatch/camera/startCam.sh" & 
+        echo $! >> /tmp/nwatch
+        watchDog $PID3 ". /var/nwatch/wifi/dbSort.sh" &
+        echo $! >> /tmp/nwatch
+        watchDog $PID4 "sh /var/nwatch/wifi/insert.sh" &
+        echo $! >> /tmp/nwatch
+        watchDog $PID5 "sudo motion" &
+        echo $! >> /tmp/nwatch
 }
 
 if [[ $* == *"--start"* ]]
 then
-	echo "Starting Neighbourhood watch."
-	startNwatch
+        echo "Starting Neighbourhood watch."
+        startNwatch
+elif [[ $* == *"--status"* ]]
+then
+        if [ ! -f /tmp/nwatch ]
+        then
+                echo "Neighbourhood watch is not running"
+        else
+                echo "Neighbourhood watch is running under the following PIDs:"
+                cat /tmp/nwatch | tr "\n" " "
+                echo "The log file is at $logDir"
+        fi
 elif [[ $* == *"--stop"* ]] 
 then
-	echo "Stopping Neighbourhood watch."
-	killNwatch
+        echo "Stopping Neighbourhood watch."
+        killNwatch
 elif [[ $* == *"--restart"* ]] 
 then
-	echo "Restarting Neighbourhood watch."
-	killNwatch
-	sleep 2
-	startNwatch
+        echo "Restarting Neighbourhood watch."
+        killNwatch
+        sleep 2
+        startNwatch
 else
-	echo "Usage:"
-	echo "\"nwatch --start\" to start the service"
-	echo "\"nwatch --restart\" to restart the service"
-	echo "\"nwatch --stop\" to stop the service"
+        echo "Usage:"
+        echo "\"nwatch --start\" to start the service"
+        echo "\"nwatch --restart\" to restart the service"
+        echo "\"nwatch --stop\" to stop the service"
 fi
