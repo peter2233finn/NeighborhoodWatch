@@ -8,7 +8,7 @@
                    <?php                                                                                                                                                                                                                  
                            include "dbConnect.php";                                                                                                                                                                                       
                            echo "<table class='carFeedTable'>                                                                                                                                                                             
-                           <tr><th>Time</th><th>Regristration plate</th><th>Open event</th></tr>";                                                                                                                                        
+                           <tr><td>Delete</td><th>Time</th><th>Regristration plate</th><th>Open event</th></tr>";                                                                                                                                        
                            $conn = $connection->query("select VIDID,VIDDIR,PLATE,TIME from CAMEVENT ORDER BY TIME DESC");                                                                                                                 
                            while ($row = $conn->fetch()) {                                                                                                                                                                                
                                    if ($row['PLATE'] == null){                                                                                                                                                                            
@@ -17,7 +17,13 @@
                                    else{                                                                                                                                                                                                  
                                            $plate=$row['PLATE'];                                                                                                                                                                          
                                    }                                                                                                                                                                                                      
-                                   echo '<tr><td>'.$row['TIME'].'</td><td>'.$plate.'</td>                                                                                                                                                 
+                                   echo '<tr><td>
+                                           
+                <form method="post" action="update.php">
+                <input type="hidden" id="action2" name="delEvent" value="'.$row['VIDID'].'">
+                <input type="submit" class="bt1" value="Delete">
+
+</td><td>'.$row['TIME'].'</td><td>'.$plate.'</td>                                                                                                                                                 
                                    <td>                                                                                                                                                                                                   
                                    <form action="/event.php" method="post">                                                                                                                                                               
                                    <input type="hidden" name="event" value="'.$row['VIDID'].'">                                                                                                                                           
@@ -27,11 +33,10 @@
 
                            }                                                                                                                                                                                                              
 
-                           echo '</table></td><td>                                                                                                                                                                                        
-                           <p class="bold">Settings</p>
-                           <table>
-                           <tr><td>Vehicle settings</td><td>Account settings</td></tr><tr><td>Whitelist vehicles
-                           <form action="/update.php" method="post">';
+                                                      echo '</table></td><td><p class="bold">Settings</p><table>
+                                                <tr><td>Vehicle settings</td>
+                                                <td>Account settings</td>
+                                                </tr><tr><td>Whitelist vehicles<form action="/update.php" method="post">';
 
    $conn = $connection->query("SELECT BLIST,WLIST FROM LISTS where USERID = '".  $_COOKIE['LogUser']  ."'");
    $WLIST="";
@@ -49,8 +54,8 @@
            }
    }
 
-   echo '<textarea class="tb" rows="'.($wRows+1).'" cols="30" name="wl">'.$WLIST.'</textarea><br>Blacklist vehicles<br><textarea class="tb" rows="'.($bRows+1);
-   echo '" type="text" name="bl">'.$BLIST.'</textarea>';
+      echo '<textarea class="tb" rows="'.($wRows+1).'" cols="30" name="wl">'.$WLIST.'</textarea><br>Blacklist vehicles<br><textarea class="tb" rows="'.($bRows+1);
+      echo '" type="text" name="bl">'.$BLIST.'</textarea>';
 ?>
 
 <br><br>
