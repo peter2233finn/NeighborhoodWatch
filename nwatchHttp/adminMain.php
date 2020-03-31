@@ -22,7 +22,7 @@
                 <form method="post" action="update.php">
                 <input type="hidden" id="action2" name="delEvent" value="'.$row['VIDID'].'">
                 <input type="submit" class="bt1" value="Delete">
-
+                </form>
 </td><td>'.$row['TIME'].'</td><td>'.$plate.'</td>                                                                                                                                                 
                                    <td>                                                                                                                                                                                                   
                                    <form action="/event.php" method="post">                                                                                                                                                               
