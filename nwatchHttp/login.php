@@ -85,8 +85,11 @@ function adminConsole(){
                <option value = "mod">Edit users</option>
                <option value = "del">Delete users</option>
                <option value = "add">Add user</option>
-	     </select></td><td><input class="bt1" type="submit" value="Submit"></form></td></tr></table>';
-	
+	        </select></td><td><input class="bt1" type="submit" value="Submit"></form></td><td>
+		<form action="/adminMain.php" method="post">
+		<input type="submit" value="Show events" class="bt1">                                                                                                                                                   
+		</form></td></tr></table>';
+
 	if($_POST["action"] == "del"){
 		$ter=0;
 		foreach($_POST as $key => $value)
