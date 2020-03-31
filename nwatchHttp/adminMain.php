@@ -1,59 +1,84 @@
-<?php
-include 'auth.php';
-include 'dbConnect.php';
+<html>                                                                                                                                                                                                                                    
+<link rel="stylesheet" href="style.css">                                                                                                                                                                                                  
+<body>                                                                                                                                                                                                                                    
+   <table class="mainTable">                                                                                                                                                                                                              
+   <tr>                                                                                                                                                                                                                                   
+           <td>                                                                                                                                                                                                                           
+                   <p class="bold">Events</p>                                                                                                                                                                                             
+                   <?php                                                                                                                                                                                                                  
+                           include "dbConnect.php";                                                                                                                                                                                       
+                           echo "<table class='carFeedTable'>                                                                                                                                                                             
+                           <tr><th>Time</th><th>Regristration plate</th><th>Open event</th></tr>";                                                                                                                                        
+                           $conn = $connection->query("select VIDID,VIDDIR,PLATE,TIME from CAMEVENT ORDER BY TIME DESC");                                                                                                                 
+                           while ($row = $conn->fetch()) {                                                                                                                                                                                
+                                   if ($row['PLATE'] == null){                                                                                                                                                                            
+                                           $plate="No lisence plate";                                                                                                                                                                     
+                                   }                                                                                                                                                                                                      
+                                   else{                                                                                                                                                                                                  
+                                           $plate=$row['PLATE'];                                                                                                                                                                          
+                                   }                                                                                                                                                                                                      
+                                   echo '<tr><td>'.$row['TIME'].'</td><td>'.$plate.'</td>                                                                                                                                                 
+                                   <td>                                                                                                                                                                                                   
+                                   <form action="/event.php" method="post">                                                                                                                                                               
+                                   <input type="hidden" name="event" value="'.$row['VIDID'].'">                                                                                                                                           
+                                   <input type="submit" value="Show event" class="bt1">                                                                                                                                                   
+                                   </form>                                                                                                                                                                                                
+                                   </td></tr>';                                                                                                                                                                                           
 
-if( isset($_POST['delEvent']) ){
-        include 'adminAuth.php';
-        $pwd = $conn->query("delete from CAMEVENT where VIDID = '". $_POST['delEvent'] ."'");
-        $msg.="Event has been deleted";
-        setcookie("msg",$msg);
-        header("Location: adminMain.php");
-        die();
-}
-if( isset($_POST['cur']) ){
-        $pwd = $conn->query("select password from USERS WHERE USERID = '". $_COOKIE['LogUser'] ."'");
+                           }                                                                                                                                                                                                              
 
-        while ($row = $pwd->fetch()) {
-                        $password= $row['password'];
-                }
-        if($password === $_POST["cur"]){
+                           echo '</table></td><td>                                                                                                                                                                                        
+                           <p class="bold">Settings</p>
+                           <table>
+                           <tr><td>Vehicle settings</td><td>Account settings</td></tr><tr><td>Whitelist vehicles
+                           <form action="/update.php" method="post">';
 
-                if($_POST["new1"] === $_POST["new2"]){
+   $conn = $connection->query("SELECT BLIST,WLIST FROM LISTS where USERID = '".  $_COOKIE['LogUser']  ."'");
+   $WLIST="";
+   $BLIST="";
+   $bRows=0;
+   $wRows=0;
+   while ($row = $conn->fetch()) {
+           if ($row['BLIST'] != NULL){
+                   $BLIST.=$row['BLIST']."\n";
+                   $bRows++;
+           }
+           if ($row['WLIST'] != NULL){
+                   $WLIST.=$row['WLIST']."\n";
+                   $wRows++;
+           }
+   }
 
-                        if($_POST["new1"]==NULL){
-                                $msg="Please enter something for the new password";
-                        }
-                        else{
-                                $updated = $conn->query("UPDATE USERS SET PASSWORD='".$_POST["new1"]."' WHERE USERID = ". $_COOKIE['LogUser']);
-
-                                $msg="Your password was sucessfully updated";
-                        }
-                }
-                else{
-                        $msg="The passwords you entered do not match.";
-                }
-
-
-        }
-        else{
-                $msg="The password you entered is wrong. Please try again.";
-        }
-
-}
-else{
-
-        $blackList=explode("\n", $_POST["bl"]);
-        $whiteList=explode("\n", $_POST["wl"]);
-        foreach ($whiteList as $item) {
-                $conn = $connection->query("INSERT INTO LISTS(WLIST, USERID) VALUES('".$item."','". $_COOKIE['LogUser']."')");
-        }
-        foreach ($blackList as $item) {
-                $conn = $connection->query("INSERT INTO LISTS(BLIST, USERID) VALUES('".$item."','". $_COOKIE['LogUser']."')");
-        }
-}
-
-setcookie("msg",$msg);
-
-header("Location: main.php");
-
+   echo '<textarea class="tb" rows="'.($wRows+1).'" cols="30" name="wl">'.$WLIST.'</textarea><br>Blacklist vehicles<br><textarea class="tb" rows="'.($bRows+1);
+   echo '" type="text" name="bl">'.$BLIST.'</textarea>';
 ?>
+
+<br><br>
+<input class="bt1" type="submit" value="Update">
+</form>
+                           </td>
+
+                           <td>
+<form action="/update.php" method="post">
+Current password <input type="password" name="cur"><br>
+New password <input type="password" name="new1"><br>
+New password <input type="password" name="new2"><br>
+<br><br>
+<input class="bt1" type="submit" value="Update">
+</form>
+                           </td>
+                           </tr>
+                           </table>
+   <?php
+           echo $_COOKIE["msg"];
+           unset($_COOKIE["msg"]);
+?>
+
+                   </tr>
+           </tr>
+   </tr>
+   </table>
+</body>
+</html>
+
+</form>
