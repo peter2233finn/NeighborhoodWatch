@@ -112,4 +112,6 @@ else
         echo "\"nwatch --start\" to start the service"
         echo "\"nwatch --restart\" to restart the service"
         echo "\"nwatch --stop\" to stop the service"
+        echo "\"nwatch --status\" to check whether it is running"
+        
 fi
