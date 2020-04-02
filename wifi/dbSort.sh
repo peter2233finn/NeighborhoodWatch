@@ -96,6 +96,8 @@ do
         dodel=$(($videoDel % 5))
                 if (( $dodel == 0))
                 then
+                        touch /tmp/nwatch-notDelete
+                        touch /tmp/nwatch-possDelete
                         ls /srv/http/camEvents/ > /tmp/nwatch-possDelete
                         while read camDatabase
                         do
@@ -103,8 +105,8 @@ do
                         done < <(mysql -u $dbUser -p"$dbPassword" nwatch -e"select VIDDIR from CAMEVENT;")
 
                         while read delete; 
-                        do 
-                                        rm "/srv/http/camEvents/$(echo $delete |egrep -v "camEvents|VIDDIR";)" 2>&1 >/dev/null | grep -v "Is a directory"
+                        do
+                                rm "/srv/http/camEvents/$(echo $delete |egrep -v "camEvents|VIDDIR";)" 2>&1 >/dev/null | grep -v "Is a directory"
                         done<<<$(diff --changed-group-format='%<%>' --unchanged-group-format='' /tmp/nwatch-notDelete /tmp/nwatch-possDelete)
                         rm /tmp/nwatch-notDelete
                         rm /tmp/nwatch-possDelete
