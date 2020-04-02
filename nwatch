@@ -1,3 +1,10 @@
+sh /etc/nwatch.conf || (printf "There is a syntax error with your config file /etc/nwatch.conf\n";
+printf "/etc/nwatch.conf is executed as a bash script to set varibles\n"; exit 1)
+
+if [[ $? == 1 ]]
+then
+        exit
+fi
 . /etc/nwatch.conf
 
 function watchDog(){
