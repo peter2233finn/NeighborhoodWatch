@@ -46,6 +46,21 @@ then
         exit
 fi
 
+if [[ $storage != "" ]]
+then
+        if [[ ! -d "$storage/" ]]
+        then
+                echo "The directory to store videos ($storage) apears not to exist"
+                exit
+        else
+                unlink /srv/http/camEvents 2> /dev/null
+                rm -r /srv/http/camEvents  2> /dev/null
+                ln -s "$storage" "/srv/http/camEvents" || (echo Failed to create symbolic link to \"$storage\")
+        fi
+
+fi
+
+
 sed -i "/threshold/c\threshold $threshold" /etc/motion/motion.conf
 sed -i "/pre_capture/c\pre_capture $pre_capture" /etc/motion/motion.conf
 sed -i "/post_capture/c\post_capture $post_capture" /etc/motion/motion.conf
