@@ -18,7 +18,7 @@ function watchDog(){
                 echo "New PID is $PID."  >> $logDir
                 sed -i -e 's/$PID/$PID2/g' /tmp/nwatch.process
                 PID=$PID2
-                sleep 3m;
+                sleep 3;
 
         done
 }
