@@ -6,7 +6,6 @@ then
         exit
 fi
 . /etc/nwatch.conf
-
 function watchDog(){
         echo "Process \"$2\" started as PID $1" 
         PID=$1
@@ -44,6 +43,7 @@ function killNwatch(){
                 sudo airmon-ng stop "${allMon[i]::-1}"
         done
         ifconfig $networkInterface up
+        echo "[INFO]: nwatch stopped at $(date +'%F %T')." >> $logDir
 }
 
 function startNwatch(){
@@ -111,6 +111,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
         echo $! >> /tmp/nwatch
         watchDog $PID5 "motion" &
         echo $! >> /tmp/nwatch
+        echo "[INFO]: nwatch started at $(date +'%F %T')." >> $logDir
 }
 
 if [[ $* == *"--start"* ]]
