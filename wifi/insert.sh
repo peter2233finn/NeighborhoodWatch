@@ -28,7 +28,7 @@ mysql --user="$dbUser" --password="$dbPassword" --database="$dbName" --execute="
 
 }
 channel_hop &
-echo $! >> /tmp/nwatch.process
+echo $! >> /tmp/nwatch
 #replace test with command and remove function test
 sudo tcpdump -l -I -i "$interface" -e -s 256 type mgt subtype probe-req | awk -f /var/nwatch/wifi/parse-tcpdump.awk | while IFS= read -r output
 do
