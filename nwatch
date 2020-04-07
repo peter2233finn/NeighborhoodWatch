@@ -112,6 +112,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
         watchDog $PID5 "motion" &
         echo $! >> /tmp/nwatch
         echo "[INFO]: nwatch started at $(date +'%F %T')." >> $logDir
+        chmod 777 $logDir
 }
 
 if [[ $* == *"--start"* ]]
