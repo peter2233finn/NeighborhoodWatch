@@ -75,7 +75,7 @@ cat: cat: No such file or directory
                 </form>
 </td><td>'.$row['TIME'].'</td><td>'.$plate.'</td>                                                                                                                                                 
                                    <td>                                                                                                                                                                                                   
-                                   <form action="/event.php" method="post">                                                                                                                                                               
+                                   <form action="/event.php" method="post" target="_blank">                                                                                                                                                               
                                    <input type="hidden" name="event" value="'.$row['VIDID'].'">                                                                                                                                           
                                    <input type="submit" value="Show event" class="bt1">                                                                                                                                                   
                                    </form>                                                                                                                                                                                                
