@@ -31,9 +31,9 @@
 
 	CREATE TABLE CAMEVENT (
 	    VIDID int NOT NULL AUTO_INCREMENT,
-	    VIDDIR varchar(120),
+	    VIDDIR varchar(120) UNIQUE,
 	    PLATE varchar(20),
-	    TIME TIMESTAMP,
+	    TIME TIMESTAMP UNIQUE,
 	    PRIMARY KEY (VIDID)
 	);
 
