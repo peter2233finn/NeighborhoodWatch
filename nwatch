@@ -18,7 +18,7 @@ function watchDog(){
                 echo "New PID is $PID."  >> $logDir
                 sed -i -e 's/$PID/$PID2/g' /tmp/nwatch.process
                 PID=$PID2
-                sleep 3;
+                sleep 3m;
 
         done
 }
@@ -47,10 +47,41 @@ function killNwatch(){
 }
 
 function startNwatch(){
-if [[ -f /tmp/nwatch.process ]]; 
+if [[ -f /tmp/nwatch ]]; 
 then 
         echo "NeighborhoodWatch is already running. use \"nwatch --stop\" first." 
         exit
+fi
+
+httpType=$camURL
+if [[ $httpType == *"https"*  ]]
+then
+        http="https://"
+else
+        http="http://"
+fi
+camURL=$(echo $camURL | sed 's/https:\/\///')
+camURL=$(echo $camURL | sed 's/http:\/\///')
+camURL="$http""$camUser"":""$camPass""@""$camURL"
+
+
+echo "Testing connection to camera using URL: $camURL"
+curl $camURL --max-time 3 --output /tmp/nwatchCamTest 2> /dev/null > /dev/null
+if [ -f /tmp/nwatchCamTest ]
+then
+        if [[ $(cat /tmp/nwatchCamTest | strings | grep -i 404 | grep -i "not found") != "" ]]
+        then
+                echo "Failed to connect to camera. Are you sure the address,username and password are correct?"
+                rm /tmp/nwatchCamTest
+                exit 1
+        else
+                echo "Sucess..."
+                rm /tmp/nwatchCamTest
+        fi
+else
+        echo "Failed to connect to camera. Are you sure the address,username and password are correct?"
+        rm /tmp/nwatchCamTest
+        exit 1
 fi
 
 if [[ $storage != "" ]]
@@ -112,7 +143,6 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
         watchDog $PID5 "motion" &
         echo $! >> /tmp/nwatch
         echo "[INFO]: nwatch started at $(date +'%F %T')." >> $logDir
-        chmod 777 $logDir
 }
 
 if [[ $* == *"--start"* ]]
