@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'auth.php';
 include 'dbConnect.php';
 
@@ -50,9 +51,8 @@ else{
         foreach ($blackList as $item) {
                 $conn = $connection->query("INSERT INTO LISTS(BLIST, USERID) VALUES('".$item."','". $_COOKIE['LogUser']."')");
         }
-        setcookie("msg",$msg);
+        $msg.="The lists have been updated";
 }
-
+$_SESSION["msg"]=$msg;
 header("Location: main.php");
-
 ?>
