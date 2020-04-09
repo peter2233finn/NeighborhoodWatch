@@ -1,33 +1,36 @@
-<html>                                                                                                                                                                                                                                         
-<link rel="stylesheet" href="style.css">                                                                                                                                                                                                       
-<body>                                                                                                                                                                                                                                         
-        <table class="mainTable">                                                                                                                                                                                                              
-        <tr>                                                                                                                                                                                                                                   
-                <td>                                                                                                                                                                                                                           
-                        <p class="bold">Events</p>                                                                                                                                                                                             
-                        <?php                                                                                                                                                                                                                  
-                                include "dbConnect.php";                                                                                                                                                                                       
-                                echo "<table class='carFeedTable'>                                                                                                                                                                             
-                                <tr><th>Time</th><th>Regristration plate</th><th>Open event</th></tr>";                                                                                                                                        
-                                $conn = $connection->query("select VIDID,VIDDIR,PLATE,TIME from CAMEVENT ORDER BY TIME DESC");                                                                                                                 
-                                while ($row = $conn->fetch()) {                                                                                                                                                                                
-                                        if ($row['PLATE'] == null){                                                                                                                                                                            
-                                                $plate="No lisence plate";                                                                                                                                                                     
-                                        }                                                                                                                                                                                                      
-                                        else{                                                                                                                                                                                                  
-                                                $plate=$row['PLATE'];                                                                                                                                                                          
-                                        }                                                                                                                                                                                                      
-                                        echo '<tr><td>'.$row['TIME'].'</td><td>'.$plate.'</td>                                                                                                                                                 
-                                        <td>                                                                                                                                                                                                   
-                                        <form action="/event.php" method="post" target="_blank">                                                                                                                                                               
-                                        <input type="hidden" name="event" value="'.$row['VIDID'].'">                                                                                                                                           
-                                        <input type="submit" value="Show event" class="bt1">                                                                                                                                                   
-                                        </form>                                                                                                                                                                                                
-                                        </td></tr>';                                                                                                                                                                                           
-                                                                                                                                                                                                                                               
-                                }                                                                                                                                                                                                              
-                                                                                                                                                                                                                                               
-                                echo '</table></td><td>                                                                                                                                                                                        
+<?php
+        session_start();
+?>
+<html>
+<link rel="stylesheet" href="style.css">
+<body>
+        <table class="mainTable">
+        <tr>
+                <td>
+                        <p class="bold">Events</p> 
+                        <?php
+                                include "dbConnect.php";
+                                echo "<table class='carFeedTable'>
+                                <tr><th>Time</th><th>Regristration plate</th><th>Open event</th></tr>";
+                                $conn = $connection->query("select VIDID,VIDDIR,PLATE,TIME from CAMEVENT ORDER BY TIME DESC");
+                                while ($row = $conn->fetch()) {
+                                        if ($row['PLATE'] == null){
+                                                $plate="No lisence plate";
+                                        }
+                                        else{
+                                                $plate=$row['PLATE'];
+                                        }
+                                        echo '<tr><td>'.$row['TIME'].'</td><td>'.$plate.'</td>
+                                        <td>
+                                        <form action="/event.php" method="post">
+                                        <input type="hidden" name="event" value="'.$row['VIDID'].'">
+                                        <input type="submit" value="Show event" class="bt1">
+                                        </form>
+                                        </td></tr>';
+
+                                }
+
+                                echo '</table></td><td>
                                 <p class="bold">Settings</p>
                                 <table>
                                 <tr><td>Vehicle settings</td><td>Account settings</td></tr><tr><td>Whitelist vehicles
@@ -36,6 +39,7 @@
         include 'auth.php';
         include 'dbConnect.php';
         $conn = $connection->query("SELECT BLIST,WLIST FROM LISTS where USERID = '".  $_COOKIE['LogUser']  ."'");
+
         $WLIST="";
         $BLIST="";
         $bRows=0;
@@ -71,9 +75,9 @@ New password <input type="password" name="new2"><br>
                                 </td>
                                 </tr>
                                 </table>
-        <?php
-                echo $_COOKIE["msg"];
-                unset($_COOKIE["msg"]);
+<?php
+        echo $_SESSION["msg"];
+        $_SESSION["msg"]="";
 ?>
 
                         </tr>
