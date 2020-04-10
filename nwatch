@@ -1,11 +1,17 @@
+# checks if the config is valid.
+# Print error and exit if it fails to execute
 sh /etc/nwatch.conf || (printf "There is a syntax error with your config file /etc/nwatch.conf\n";
 printf "/etc/nwatch.conf is executed as a bash script to set varibles\n"; exit 1)
+
 
 if [[ $? == 1 ]]
 then
         exit
 fi
 . /etc/nwatch.conf
+
+# function watchDog. Used to keep the process alove if they stop.
+# This is ran for each process
 function watchDog(){
         echo "Process \"$2\" started as PID $1. Watchdog is running for this process." >> $logDir
         PID=$1
@@ -25,17 +31,24 @@ function watchDog(){
 
 
 
-
+# killNwatch stops nwatch
 function killNwatch(){
+
+	# Checks if nwatch is running
         if [ ! -f /tmp/nwatch ]; then
                 echo "Nwatch not running. Will attempt to reset mon interfaces anyway"
         else
                 kill $(cat /tmp/nwatch | tr "\n" " ")
+		# ffmpeg fails to stop so must be done manually
                 pkill ffmpeg
         fi
 
+	# remove tempoart files
         rm /tmp/nwatch
         rm /tmp/nwatch.process
+
+	# This puts all monitor interfaces down.
+	# airmon-ng sometimes creates a duplicate interface.
         IFS=$'\n'
         allMon=($(ifconfig | grep mon| awk '{print $1}'))
         for (( i=0; i<${#allMon[@]}; i++ ))
@@ -47,12 +60,16 @@ function killNwatch(){
 }
 
 function startNwatch(){
+
+# Check if nwatch is already running
 if [[ -f /tmp/nwatch ]]; 
 then 
         echo "NeighborhoodWatch is already running. use \"nwatch --stop\" first." 
         exit
 fi
 
+# This formats the camera URL that will work with ffmpeg and v4l2loopback
+# The format is http://user:pass@(URL)
 httpType=$camURL
 if [[ $httpType == *"https"*  ]]
 then
@@ -62,20 +79,32 @@ else
 fi
 camURL=$(echo $camURL | sed 's/https:\/\///')
 camURL=$(echo $camURL | sed 's/http:\/\///')
-camURL="$http""$camUser"":""$camPass""@""$camURL"
+
+# Checks if the camera has a username set in /etc/nwatch.conf
+# If it doesnt, assume there is no bacic authentication
+if [[ $camUser == "" ]]
+then
+	camURL="$http""$camURL"
+else
+	camURL="$http""$camUser"":""$camPass""@""$camURL"
+fi
 
 
+# Test connection to the IP camera
+# Uses curl to connect to camera. 
+# it will fail if the responce contains 404 error or if the connection fails
 echo "Testing connection to camera using URL: $camURL"
 curl $camURL --max-time 3 --output /tmp/nwatchCamTest 2> /dev/null > /dev/null
 if [ -f /tmp/nwatchCamTest ]
 then
         if [[ $(cat /tmp/nwatchCamTest | strings | grep -i 404 | grep -i "not found") != "" ]]
         then
-                echo "Failed to connect to camera. Are you sure the address,username and password are correct?"
+                echo "Failed to connect to camera. Recieved a 404 not found error."
+		echo "Is the directory for the stream correct"
                 rm /tmp/nwatchCamTest
                 exit 1
         else
-                echo "Sucess..."
+                echo "Connection success..."
                 rm /tmp/nwatchCamTest
         fi
 else
@@ -84,8 +113,11 @@ else
         exit 1
 fi
 
+# Checks if user wants to use differant storage for videos
 if [[ $storage != "" ]]
 then
+	# Check if the storage exists
+	# Errors such as forgetting to mount a drive can happen
         if [[ ! -d "$storage/" ]]
         then
                 echo "The directory to store videos ($storage) apears not to exist"
@@ -98,21 +130,24 @@ then
 
 fi
 
-
+# Edits the motion config file. THis sets the parameters using sed
 sed -i "/threshold/c\threshold $threshold" /etc/motion/motion.conf
 sed -i "/pre_capture/c\pre_capture $pre_capture" /etc/motion/motion.conf
 sed -i "/post_capture/c\post_capture $post_capture" /etc/motion/motion.conf
 sed -i "/log_file/c\log_file $logDir" /etc/motion/motion.conf
 
+# Start the process of setting up the monitor mode in the wireless card
 sudo ip link set wlan1 up
 sudo ifconfig $networkInterface down
 sudo ifconfig $networkInterface up
 sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the network interface. check if it is set up correctly"; exit)
+	# make sure the module v4l2loopback is loaded
         modprobe v4l2loopback
         sudo airmon-ng start $networkInterface
         touch /tmp/nwatch.process
         touch /tmp/nwatch
 
+	# Start the processes
         sh /var/nwatch/camera/alpr.sh &
         echo $! >> /tmp/nwatch
         PID1=$!
@@ -130,7 +165,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
         echo $! >> /tmp/nwatch
         PID5=$!
 
-
+	# Start the watchdog for the previous processes
         echo $! >> /tmp/nwatch
         watchDog $PID1 "sh /var/nwatch/camera/alpr.sh" &
         echo $! >> /tmp/nwatch
@@ -145,6 +180,7 @@ sudo airmon-ng start $networkInterface || (echo "[ERROR]: Failed to start the ne
         echo "[INFO]: nwatch started at $(date +'%F %T')." >> $logDir
 }
 
+# This is the main menu that calls the correct functions
 if [[ $* == *"--start"* ]]
 then
         echo "Starting Neighbourhood watch."
@@ -170,6 +206,7 @@ then
         sleep 2
         startNwatch
 else
+	# Error messages if incorrect arguement is given
         echo "Usage:"
         echo "\"nwatch --start\" to start the service"
         echo "\"nwatch --restart\" to restart the service"
