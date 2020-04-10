@@ -7,7 +7,7 @@ then
 fi
 . /etc/nwatch.conf
 function watchDog(){
-        echo "Process \"$2\" started as PID $1" 
+        echo "Process \"$2\" started as PID $1. Watchdog is running for this process." >> $logDir
         PID=$1
         while true
         do
@@ -16,7 +16,7 @@ function watchDog(){
                 $2 &
                 PID2=$!
                 echo "New PID is $PID."  >> $logDir
-                sed -i -e 's/$PID/$PID2/g' /tmp/nwatch.process
+                sed -i -e 's/$PID/$PID2/g' /tmp/nwatch
                 PID=$PID2
                 sleep 3m;
 
