@@ -205,12 +205,27 @@ then
         killNwatch
         sleep 2
         startNwatch
+
+elif [[ $* == *"--flush-events"* ]] 
+then
+	# This flushes all the event tables, except Scanner
+	# This is so they wont have to be queried to wigle again 
+	echo "Removing processed events..."
+	mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from BEACON where 1=1;"
+	echo "Removing events to be processed..."
+	mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from SCANNERLIMBO where 1=1;"
+	echo "Removing camera events..."
+	mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from CAMEVENT where 1=1;"
+	echo "Deleting all video files..."
+	rm /srv/http/camEvents/* 2> /dev/null
+	echo "All done!"
 else
 	# Error messages if incorrect arguement is given
         echo "Usage:"
         echo "\"nwatch --start\" to start the service"
         echo "\"nwatch --restart\" to restart the service"
         echo "\"nwatch --stop\" to stop the service"
+        echo "\"nwatch --flush-events\" to remove all events"
         echo "\"nwatch --status\" to check whether it is running"
         
 fi
