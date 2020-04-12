@@ -88,7 +88,7 @@ do
 			# Adds stupid \r charecter for some reason. xargs wont remove
 			macVendor=$(echo ${macVendor:-1} | tr -d '\r' | xargs echo -n | tr "'" "\"")
 			bList=$(mysql -u root -p825 nwatch -e "select BLIST from LISTS where BLIST = '"$essid"' LIMIT 1" | grep "$essid")
-			if [[ "$blist" == "" ]]
+			if [[ "$bList" == "" ]]
 			then
 				mysql -u $dbUser -p"$dbPassword" nwatch -e"insert into BEACON(VENDOR,MAC,ESSID,TIME) VALUES('$macVendor','$mac','$essid','$time');"
 			fi
