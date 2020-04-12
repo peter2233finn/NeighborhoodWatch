@@ -12,7 +12,7 @@ do
 		set=1
 		if [[ $(cat /tmp/nwatch.process | grep limitReached|head -n 1) == "limitReached" ]]
 		then
-			echo "Wiggle limit still in effect. Will try again in 30 minuits." >> $logDir
+			echo "[Info]: Wigle limit still in effect. Will try again in 30 minuits." >> $logDir
 			sleep 30m
 			echo "" > /tmp/nwatch.process
 			
@@ -35,7 +35,7 @@ do
 				if [[ $(echo $results | jq ".success") == "false" ]]
 				then
 					set=0
-					echo "Wiggle failed to do query, because: $(echo "$results" | jq ".message")" >> $logDir
+					echo "[Info]: Wiggle failed to do query, because: $(echo "$results" | jq ".message")" >> $logDir
 					if [[ $(echo "$results" | jq ".message") == *"too many queries today"* ]]
 					then
 						echo "limitReached" >> /tmp/nwatch.process
@@ -90,7 +90,9 @@ do
 			bList=$(mysql -u root -p825 nwatch -e "select BLIST from LISTS where BLIST = '"$essid"' LIMIT 1" | grep "$essid")
 			if [[ "$bList" == "" ]]
 			then
-				mysql -u $dbUser -p"$dbPassword" nwatch -e"insert into BEACON(VENDOR,MAC,ESSID,TIME) VALUES('$macVendor','$mac','$essid','$time');"
+				mysql -u $dbUser -p"$dbPassword" nwatch -e"insert into BEACON(VENDOR,MAC,ESSID,TIME) VALUES('$macVendor','$mac','$(echo $essid| sed "s/'/''/g")','$time');"
+			else
+				echo "[Info]: The ESSID: $essid is whitelisted by a user." >> $logDir
 			fi
 			mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from SCANNERLIMBO where ID='$(echo $line | awk '{print $1}')';"
 	fi
