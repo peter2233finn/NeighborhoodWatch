@@ -41,12 +41,13 @@ sudo depmod -a
 sudo modprobe v4l2loopback
 
 sudo cp -r camera /var/nwatch
+sudo cp -r installFiles/blacklistAlert.sh /var/nwatch
 sudo cp -r installFiles/php.ini /etc/php/php.ini
 sudo cp -r installFiles/motion.conf /etc/motion
 sudo cp -r wifi /var/nwatch
 sudo cp -r nwatchHttp/* /srv/http
 sudo cp nwatch /usr/bin/
-sudo chmod +x /usr/bin/nwatch
+sudo chmod -R +x /usr/bin/nwatch
 
 echo "Adding user nwatch"
 mkdir /home/nwatch
