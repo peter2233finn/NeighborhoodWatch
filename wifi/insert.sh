@@ -1,7 +1,10 @@
 . /etc/nwatch.conf
-
+# Partial code used: https://github.com/brannondorsey/sniff-probes
+# Sets the mon interface
 interface="$(ifconfig | grep mon | head -n 1 | awk '{print $1}' | tr ":" " "| xargs)"
 
+# Channel hop allows the NIC to jump from channel to channel
+# which recieves more results
 channel_hop() {
 
 	IEEE80211bg="1 2 3 4 5 6 7 8 9 10 11"
@@ -18,7 +21,7 @@ channel_hop() {
 	done
 }
 
-
+# This function inserts the data into the database
 function insert {
 MAC="$3"
 SSID="$4 $5 $6 $7 $8 $9"
@@ -29,7 +32,7 @@ mysql --user="$dbUser" --password="$dbPassword" --database="$dbName" --execute="
 }
 channel_hop &
 echo $! >> /tmp/nwatch
-#replace test with command and remove function test
+# This uses tcpdump and awk to filter out the relivant results 
 sudo tcpdump -l -I -i "$interface" -e -s 256 type mgt subtype probe-req | awk -f /var/nwatch/wifi/parse-tcpdump.awk | while IFS= read -r output
 do
 	insert $output 
