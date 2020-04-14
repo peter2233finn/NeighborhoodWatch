@@ -218,6 +218,9 @@ then
 	mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from CAMEVENT where 1=1;"
 	echo "Deleting all video files..."
 	rm /srv/http/camEvents/* 2> /dev/null
+	echo "removing log file..."
+	rm "$logDir"
+	touch "$logDir"
 	echo "All done!"
 else
 	# Error messages if incorrect arguement is given
