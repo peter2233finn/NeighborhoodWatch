@@ -56,7 +56,7 @@ mkdir /home/nwatch
 #echo "Enter the password for the user nwatch"
 #passwd nwatch
 
-
+echo 'http ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo
 sudo cp installFiles/httpd.conf /etc/httpd/conf/httpd.conf
 sudo cp installFiles/php.ini /etc/php/php.ini
 
