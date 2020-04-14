@@ -88,10 +88,15 @@ do
 			# Adds stupid \r charecter for some reason. xargs wont remove
 			macVendor=$(echo ${macVendor:-1} | tr -d '\r' | xargs echo -n | tr "'" "\"")
 			bList=$(mysql -u root -p"$dbPassword" nwatch -e "select WLIST from LISTS where WLIST = '"$essid"' LIMIT 1" | grep -i "$essid")
+			ALERT=$(mysql -u root -p"$dbPassword" nwatch -e "select BLIST from LISTS where BLIST = '"$essid"' LIMIT 1" | grep -i "$essid")
 			if [[ "$bList" == "" ]]
 			then
 				mysql -u $dbUser -p"$dbPassword" nwatch -e"insert into BEACON(VENDOR,MAC,ESSID,TIME) VALUES('$macVendor','$mac','$(echo $essid| sed "s/'/''/g")','$time');"
 			else
+				if [[ "$ALERT" != "" ]]
+				then
+					sh /var/nwatch/blacklistAlert.sh "$essid" "$mac" "$macVendor" "$time"
+				fi
 				echo "[Info]: The ESSID: $essid is whitelisted by a user." >> $logDir
 			fi
 			mysql -u $dbUser -p"$dbPassword" nwatch -e"delete from SCANNERLIMBO where ID='$(echo $line | awk '{print $1}')';"
