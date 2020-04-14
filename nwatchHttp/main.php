@@ -1,3 +1,4 @@
+
 <?php
 	session_start();
 ?>	
@@ -86,3 +87,4 @@ New password <input minlength="8" type="password" name="new2"><br>
 	</table>
 </body>
 </html>
+

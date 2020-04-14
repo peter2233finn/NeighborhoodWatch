@@ -2,13 +2,14 @@
 session_start();
 include 'auth.php';
 include 'dbConnect.php';
+$msg="";
 
 if( isset($_POST['delEvent']) ){
         include 'adminAuth.php';
         $h = $conn->query("delete from CAMEVENT where VIDID = '". $_POST['delEvent'] ."'");
         $msg.="Event has been deleted";
         setcookie("msg","Event has been deleted.");
-        header("Location: adminMain.php");
+ 	header("Location: adminMain.php");
         die();
 }
 if( isset($_POST['cur']) ){
@@ -43,15 +44,27 @@ if( isset($_POST['cur']) ){
 }
 else{
 
+	if($_COOKIE['LogUser']=="admin"){
+		$userID=1;
+	}
+	else{
+		$userID=$_COOKIE["LogUser"];
+	}
+	$conn = $connection->query("DELETE FROM LISTS WHERE USERID ='". $userID."'");
         $blackList=explode("\n", $_POST["bl"]);
         $whiteList=explode("\n", $_POST["wl"]);
-        foreach ($whiteList as $item) {
-                $conn = $connection->query("INSERT INTO LISTS(WLIST, USERID) VALUES('".$item."','". $_COOKIE['LogUser']."')");
+	foreach ($whiteList as $item) {
+		$item = trim(preg_replace('/\s\s+/', '', $item));
+		$conn = $connection->query( "INSERT INTO LISTS(WLIST, USERID) VALUES(TRIM(CHAR(9) FROM TRIM(CHAR(10) 
+			FROM '".$item."')),'". $userID."')");
         }
         foreach ($blackList as $item) {
-                $conn = $connection->query("INSERT INTO LISTS(BLIST, USERID) VALUES('".$item."','". $_COOKIE['LogUser']."')");
-        }
-        $msg.="The lists have been updated";
+		$item = trim(preg_replace('/\s\s+/', '', $item));
+	#$conn = $connection->query("INSERT INTO LISTS(BLIST, USERID) VALUES(TRIM(CHAR(9) FROM '".$item."'),'". $_COOKIE['LogUser']."')");
+		$conn = $connection->query( "INSERT INTO LISTS(BLIST, USERID) VALUES(TRIM(CHAR(9) FROM TRIM(CHAR(10) 
+			FROM '".$item."')),'". $userID."')");
+	}
+	$msg.="The lists have been updated";
 }
 $_SESSION["msg"]=$msg;
 header("Location: main.php");
