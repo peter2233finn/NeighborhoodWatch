@@ -1,11 +1,14 @@
 . /etc/nwatch.conf
+
+# Entire if statment checks if the connection should be http or https
 httpType=$camURL
 if [[ $httpType == *"https"*  ]]
 then
-                http="https://"
-        else
-                        http="http://"
+	        http="https://"
+	else
+		        http="http://"
 fi
+# Sets the camera URL
 camURL=$(echo $camURL | sed 's/https:\/\///')
 camURL=$(echo $camURL | sed 's/http:\/\///')
 camURL="$http""$camUser"":""$camPass""@""$camURL"
